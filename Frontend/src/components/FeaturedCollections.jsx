@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import useScrollReveal from '../hooks/useScrollReveal';
 import '../styles/FeaturedCollections.css';
 
 import imgColl1 from '../assets/images/IMG_6943.JPG';
@@ -10,25 +12,27 @@ const collections = [
         id: 1,
         title: "Banarasi Sarees",
         image: imgColl1,
-        link: "#sarees"
+        path: "/collections/sarees"
     },
     {
         id: 2,
         title: "Bridal Lehengas",
         image: imgColl2,
-        link: "#lehengas"
+        path: "/collections/lehengas"
     },
     {
         id: 3,
         title: "Handwoven Dupattas",
         image: imgColl3,
-        link: "#dupattas"
+        path: "/collections/dupattas"
     }
 ];
 
 const FeaturedCollections = () => {
+    const [ref, isVisible] = useScrollReveal();
+
     return (
-        <section className="featured-collections container">
+        <section ref={ref} className={`featured-collections container ${isVisible ? 'fade-in' : ''}`} style={{ opacity: isVisible ? 1 : 0 }}>
             <div className="section-header">
                 <h3>Curated Collections</h3>
                 <h2>Explore Our Heritage</h2>
@@ -38,9 +42,9 @@ const FeaturedCollections = () => {
                     <div key={item.id} className="collection-card">
                         <div className="card-image">
                             <img src={item.image} alt={item.title} />
-                            <div className="overlay-hover">
+                            <Link to={item.path} className="overlay-hover">
                                 <span className="explore-text">Explore</span>
-                            </div>
+                            </Link>
                         </div>
                         <div className="card-info">
                             <h3>{item.title}</h3>

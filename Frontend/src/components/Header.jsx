@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
 
 // Import Sidebar Images
@@ -11,19 +12,20 @@ import imgBlouses from '../assets/images/IMG_6935.JPG';
 import imgGifts from '../assets/images/IMG_6939.JPG';
 
 const menuItems = [
-  { name: 'SAREES', image: imgSarees },
-  { name: 'LEHENGAS', image: imgLehengas },
-  { name: 'SUITS', image: imgSuits },
-  { name: 'DUPATTAS', image: imgDupattas },
-  { name: 'FABRICS', image: imgFabrics },
-  { name: 'BLOUSES', image: imgBlouses },
-  { name: 'GIFTS', image: imgGifts },
+  { name: 'SAREES', image: imgSarees, path: '/collections/sarees' },
+  { name: 'LEHENGAS', image: imgLehengas, path: '/collections/lehengas' },
+  { name: 'SUITS', image: imgSuits, path: '/collections/suits' },
+  { name: 'DUPATTAS', image: imgDupattas, path: '/collections/dupattas' },
+  { name: 'FABRICS', image: imgFabrics, path: '/collections/fabrics' },
+  { name: 'BLOUSES', image: imgBlouses, path: '/collections/blouses' },
+  { name: 'GIFTS', image: imgGifts, path: '/collections/gifts' },
 ];
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,6 +38,11 @@ const Header = () => {
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    toggleSidebar();
   };
 
   return (
@@ -56,7 +63,7 @@ const Header = () => {
           </div>
 
           <div className="logo-container">
-            <a href="/" className="logo-text">Syla</a>
+            <Link to="/" className="logo-text">Syla</Link>
           </div>
 
           <div className="header-right">
@@ -64,7 +71,9 @@ const Header = () => {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </button>
             <button className="icon-btn" aria-label="Account">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <Link to="/contact" style={{ color: 'inherit' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              </Link>
             </button>
             <button className="icon-btn" aria-label="Cart">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
@@ -87,14 +96,17 @@ const Header = () => {
           </div>
           <div className="sidebar-content">
             <ul className="sidebar-links">
+              <li><Link to="/" onClick={toggleSidebar}>HOME</Link></li>
+              <li><Link to="/about" onClick={toggleSidebar}>ABOUT US</Link></li>
               {menuItems.map((item) => (
                 <li key={item.name}
                   onMouseEnter={() => setActiveImage(item.image)}
                   onClick={() => setActiveImage(item.image)}
                 >
-                  <a href={`#${item.name.toLowerCase()}`}>{item.name}</a>
+                  <span onClick={() => handleNavigation(item.path)} style={{ cursor: 'pointer' }}>{item.name}</span>
                 </li>
               ))}
+              <li><Link to="/contact" onClick={toggleSidebar}>CONTACT</Link></li>
             </ul>
           </div>
         </div>

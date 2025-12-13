@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/HeroSection.css';
 
 import heroImg1 from '../assets/images/IMG_6940.JPG';
@@ -36,8 +37,8 @@ const HeroSection = () => {
                 <h1 className="fade-in">TIMELESS BANARAS</h1>
                 <p className="fade-in">Handwoven masterpieces for your special day</p>
                 <div className="button-group fade-in">
-                    <button className="primary-btn">Shop Sarees</button>
-                    <button className="secondary-btn">View Collection</button>
+                    <Link to="/collections/sarees" className="primary-btn">Shop Sarees</Link>
+                    <Link to="/collections/sarees" className="secondary-btn">View Collection</Link>
                 </div>
             </div>
         </section>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/Footer.css';
 
 const Footer = () => {
@@ -18,20 +19,20 @@ const Footer = () => {
                 <div className="footer-section">
                     <h4>INFORMATION</h4>
                     <ul>
-                        <li><a href="#">Our Story</a></li>
-                        <li><a href="#">Craft & Heritage</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Contact Us</a></li>
+                        <li><Link to="/about">Our Story</Link></li>
+                        <li><Link to="/pages/craft-heritage">Craft & Heritage</Link></li>
+                        <li><Link to="/pages/careers">Careers</Link></li>
+                        <li><Link to="/contact">Contact Us</Link></li>
                     </ul>
                 </div>
 
                 <div className="footer-section">
                     <h4>CUSTOMER SERVICE</h4>
                     <ul>
-                        <li><a href="#">Shipping & Delivery</a></li>
-                        <li><a href="#">Returns & Exchanges</a></li>
-                        <li><a href="#">Terms & Conditions</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
+                        <li><Link to="/pages/shipping-delivery">Shipping & Delivery</Link></li>
+                        <li><Link to="/pages/returns-exchanges">Returns & Exchanges</Link></li>
+                        <li><Link to="/pages/terms-conditions">Terms & Conditions</Link></li>
+                        <li><Link to="/pages/privacy-policy">Privacy Policy</Link></li>
                     </ul>
                 </div>
 
@@ -43,9 +44,9 @@ const Footer = () => {
                         <button type="submit">→</button>
                     </form>
                     <div className="social-links">
-                        <a href="#">FB</a>
-                        <a href="#">IG</a>
-                        <a href="#">YT</a>
+                        <Link to="#">FB</Link>
+                        <Link to="#">IG</Link>
+                        <Link to="#">YT</Link>
                     </div>
                 </div>
             </div>

@@ -4,18 +4,23 @@
   /* Colors */
   --color-text-primary: rgb(83, 62, 45);
   --color-background-primary: #fff;
-  --color-background-secondary: rgb(253, 251, 247); /* Detailed off-white */
-  --color-accent-gold: #c5a059; /* Approximate gold based on typical luxury visuals */
+  --color-background-secondary: rgb(253, 251, 247);
+  /* Detailed off-white */
+  --color-accent-gold: #c5a059;
+  /* Approximate gold based on typical luxury visuals */
   --color-button-bg: rgba(255, 255, 255, 0.81);
   --color-button-text: #000;
-  
+
   /* Fonts */
   --font-family-heading: 'Cardo', serif;
-  --font-family-body: 'Jost', sans-serif; /* Jost is a common modern sans-serif match */
+  --font-family-body: 'Jost', sans-serif;
+  /* Jost is a common modern sans-serif match */
 
   /* Spacing */
   --spacing-unit: 8px;
   --container-max-width: 1440px;
+  --header-height: 80px;
+  /* Estimate, adjust as needed */
 }
 
 /* Reset & Global Styles */
@@ -33,7 +38,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-family-heading);
   font-weight: 400;
   margin-bottom: 1rem;
@@ -72,6 +82,13 @@ button {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import useScrollReveal from '../hooks/useScrollReveal';
 import '../styles/ProductGrid.css';
 
 import imgProd1 from '../assets/images/IMG_6952.JPG';
@@ -34,8 +36,10 @@ const products = [
 ];
 
 const ProductGrid = () => {
+    const [ref, isVisible] = useScrollReveal();
+
     return (
-        <section className="product-grid-section container">
+        <section ref={ref} className={`product-grid-section container ${isVisible ? 'fade-in' : ''}`} style={{ opacity: isVisible ? 1 : 0 }}>
             <div className="section-header">
                 <h2>New Arrivals</h2>
             </div>
@@ -54,7 +58,7 @@ const ProductGrid = () => {
                 ))}
             </div>
             <div className="view-all-container">
-                <button className="secondary-btn" style={{ color: '#000', borderColor: '#000' }}>View All</button>
+                <Link to="/collections/sarees" className="secondary-btn" style={{ color: '#000', borderColor: '#000' }}>View All</Link>
             </div>
         </section>
     );
