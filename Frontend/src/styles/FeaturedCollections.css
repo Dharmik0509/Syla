@@ -1,0 +1,101 @@
+.featured-collections {
+    padding: 80px 20px;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-header h3 {
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    color: var(--color-text-primary);
+}
+
+.collections-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.collection-card {
+    text-align: center;
+    cursor: pointer;
+    /* group: hover; - removed invalid property */
+}
+
+.card-image {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3/4;
+    margin-bottom: 20px;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.collection-card:hover .card-image img {
+    transform: scale(1.05);
+}
+
+.overlay-hover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.collection-card:hover .overlay-hover {
+    opacity: 1;
+}
+
+.explore-text {
+    color: #fff;
+    font-family: var(--font-family-body);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 1px solid #fff;
+    padding: 10px 20px;
+}
+
+.card-info h3 {
+    font-family: var(--font-family-body);
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+    .collections-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .featured-collections {
+        padding: 50px 20px;
+    }
+
+    .section-header h2 {
+        font-size: 2rem;
+    }
+}

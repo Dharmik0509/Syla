@@ -1,0 +1,194 @@
+.hero-section {
+    position: relative;
+    width: 100%;
+    min-height: 80vh;
+    /* Fallback */
+    overflow: hidden;
+    display: grid;
+    grid-template-areas: "stack";
+    background-color: #1a3c34;
+    color: #fff;
+}
+
+.hero-background {
+    grid-area: stack;
+    position: relative;
+    width: 100%;
+    z-index: 1;
+    display: grid;
+    grid-template-areas: "layers";
+}
+
+.hero-slide {
+    grid-area: layers;
+    position: relative;
+    width: 100%;
+    height: auto;
+    /* Height defined by aspect ratio */
+    min-height: 100%;
+    /* Ensure coverage */
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+    /* Slow zoom effect */
+    animation: zoomEffect 20s infinite alternate;
+}
+
+.hero-slide.active {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.8rem;
+    }
+
+    .hero-section {
+        height: 70vh;
+    }
+
+    .hero-slide {
+        object-fit: cover;
+        /* Back to cover for mobile */
+    }
+}
+
+.overlay {
+    grid-area: layers;
+    position: relative;
+    /* Fits into grid layer */
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+    z-index: 2;
+}
+
+.hero-content {
+    grid-area: stack;
+    z-index: 10;
+    place-self: center;
+    /* Center horizontally and vertically */
+    text-align: center;
+    max-width: 800px;
+    width: 100%;
+    padding: 20px;
+    /* Ensure padding on small screens */
+}
+
+.hero-content h2 {
+    font-family: var(--font-family-body);
+    font-size: 1.2rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    font-weight: 300;
+}
+
+.hero-content h1 {
+    font-size: 4.5rem;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    width: 100%;
+    line-height: 1.1;
+}
+
+.hero-content p {
+    font-family: var(--font-family-body);
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    font-weight: 300;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.primary-btn {
+    background-color: var(--color-button-bg);
+    color: var(--color-button-text);
+    padding: 15px 40px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.primary-btn:hover {
+    background-color: #fff;
+    transform: translateY(-2px);
+}
+
+.secondary-btn {
+    background-color: transparent;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 15px 40px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.secondary-btn:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+@keyframes zoomEffect {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.1);
+    }
+}
+
+/* Delay animations */
+.hero-content h2 {
+    animation-delay: 0.2s;
+}
+
+.hero-content h1 {
+    animation-delay: 0.4s;
+}
+
+.hero-content p {
+    animation-delay: 0.6s;
+}
+
+.hero-content .button-group {
+    animation-delay: 0.8s;
+}
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.8rem;
+    }
+
+    .hero-section {
+        height: 70vh;
+    }
+
+    .hero-slide {
+        object-fit: cover;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-content h1 {
+        font-size: 2.2rem;
+    }
+
+    .hero-content p {
+        font-size: 1rem;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+        padding: 12px 25px;
+        font-size: 0.8rem;
+    }
+}

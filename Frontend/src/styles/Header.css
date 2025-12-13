@@ -1,0 +1,349 @@
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: #1a3c34;
+    /* Deep Green */
+    transition: background-color 0.4s ease, color 0.4s ease, box-shadow 0.3s ease;
+    color: #fff;
+    /* White text initially */
+}
+
+.header.scrolled {
+    background-color: #1a3c34;
+    /* Keep Deep Green */
+    color: #fff;
+    /* Keep White text */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+}
+
+.header-left,
+.header-right {
+    display: flex;
+    flex: 1;
+    align-items: center;
+}
+
+.header-right {
+    justify-content: flex-end;
+    gap: 20px;
+}
+
+.logo-container {
+    flex: 1;
+    text-align: center;
+}
+
+.logo-text {
+    font-family: var(--font-family-heading);
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: inherit;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+}
+
+
+
+.hamburger-btn {
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    /* Full Screen */
+    max-width: 100%;
+    background-color: #0b1a15;
+    /* Very Dark Green content background */
+    z-index: 2000;
+    transform: translateX(-100%);
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Elegant slow slide */
+    box-shadow: none;
+    color: #fff;
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    /* Split View */
+}
+
+.sidebar.open {
+    transform: translateX(0);
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1500;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.sidebar-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Sidebar Left (Menu Content) */
+.sidebar-left {
+    width: 35%;
+    /* Aesthetic 35/65 split */
+    min-width: 350px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 60px 40px;
+    background-color: #0b1a15;
+    position: relative;
+    z-index: 2;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: flex-end;
+    /* Align close button to right */
+    align-items: center;
+    margin-bottom: 60px;
+    /* No border, clean look */
+    background: transparent;
+    color: #fff;
+}
+
+.sidebar-title {
+    display: none;
+    /* Hide standard title for clean look */
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    /* Smaller, refined X */
+    font-family: var(--font-family-body);
+    font-weight: 300;
+    letter-spacing: 2px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close-btn:hover {
+    color: #fff;
+}
+
+.close-text {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.sidebar-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Center menu vertically */
+    padding-right: 50px;
+    /* Space from edge */
+}
+
+/* Sidebar Links */
+.sidebar-links {
+    list-style: none;
+    text-align: right;
+    /* Right align menu items */
+}
+
+.sidebar-links li {
+    margin-bottom: 25px;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.sidebar.open .sidebar-links li {
+    animation: fadeUp 0.8s ease forwards;
+}
+
+/* Stagger Delays - refined */
+.sidebar.open .sidebar-links li:nth-child(1) {
+    animation-delay: 0.3s;
+}
+
+.sidebar.open .sidebar-links li:nth-child(2) {
+    animation-delay: 0.35s;
+}
+
+.sidebar.open .sidebar-links li:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.sidebar.open .sidebar-links li:nth-child(4) {
+    animation-delay: 0.45s;
+}
+
+.sidebar.open .sidebar-links li:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.sidebar.open .sidebar-links li:nth-child(6) {
+    animation-delay: 0.55s;
+}
+
+.sidebar.open .sidebar-links li:nth-child(7) {
+    animation-delay: 0.6s;
+}
+
+.sidebar-links a {
+    font-family: var(--font-family-body);
+    /* Sans-serif for modern look */
+    font-size: 1.2rem;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    /* Dimmed by default */
+    transition: color 0.4s ease, transform 0.4s ease;
+    display: inline-block;
+    position: relative;
+    padding-right: 0;
+}
+
+.sidebar-links a:hover {
+    color: #fff;
+    transform: translateX(-10px);
+    /* Move left slightly on hover */
+    padding-left: 0;
+}
+
+
+
+
+/* Sidebar Right (Image Preview) */
+.sidebar-right {
+    flex: 1;
+    height: 100%;
+    background-color: #000;
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar-image-container {
+    position: absolute;
+    /* Stack images */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    /* Cover on all by default, will override for desktop */
+    background-position: center;
+    opacity: 0;
+    /* Hidden by default */
+    transition: opacity 0.8s ease, transform 1.2s ease;
+    /* Smooth cross-fade and slow zoom */
+    transform: scale(1.1);
+    /* Start slightly zoomed in for impact */
+    z-index: 1;
+}
+
+.sidebar-image-container.active {
+    opacity: 1;
+    transform: scale(1);
+    z-index: 2;
+}
+
+/* Ensure no-repeat/contain for desktop as applied earlier, but now on the stacked items */
+.sidebar-image-container {
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.sidebar-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    /* Slight tint for readability if text overlay exists */
+}
+
+.sidebar-footer-links {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar-footer-links hr {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    width: 50px;
+}
+
+.sidebar-footer-links a {
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 85%;
+        flex-direction: column;
+    }
+
+    .sidebar-right {
+        display: none;
+        /* Hide image on small screens */
+    }
+
+    .sidebar-left {
+        width: 100%;
+    }
+
+    .sidebar-image-container {
+        background-size: cover;
+    }
+}
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=Jost:wght@300;400;500;600&display=swap');
+
+:root {
+  /* Colors */
+  --color-text-primary: rgb(83, 62, 45);
+  --color-background-primary: #fff;
+  --color-background-secondary: rgb(253, 251, 247); /* Detailed off-white */
+  --color-accent-gold: #c5a059; /* Approximate gold based on typical luxury visuals */
+  --color-button-bg: rgba(255, 255, 255, 0.81);
+  --color-button-text: #000;
+  
+  /* Fonts */
+  --font-family-heading: 'Cardo', serif;
+  --font-family-body: 'Jost', sans-serif; /* Jost is a common modern sans-serif match */
+
+  /* Spacing */
+  --spacing-unit: 8px;
+  --container-max-width: 1440px;
+}
+
+/* Reset & Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-body);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+  font-weight: 400;
+  margin-bottom: 1rem;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.3s ease;
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Utility Animations */
+.fade-in {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

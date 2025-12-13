@@ -1,0 +1,111 @@
+.footer {
+    background-color: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    padding: 80px 0 30px;
+    margin-top: 50px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-section h4 {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    font-family: var(--font-family-body);
+    font-weight: 500;
+}
+
+.footer-section p,
+.footer-section a {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: rgba(83, 62, 45, 0.8);
+}
+
+.footer-section a:hover {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+}
+
+.newsletter-form {
+    position: relative;
+    margin-top: 20px;
+    border-bottom: 1px solid var(--color-text-primary);
+    max-width: 300px;
+}
+
+.newsletter-form input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 10px 0;
+    outline: none;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+}
+
+.newsletter-form button {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    font-size: 1.2rem;
+    color: var(--color-text-primary);
+}
+
+.social-links {
+    margin-top: 30px;
+    display: flex;
+    gap: 15px;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(139, 115, 85, 0.2);
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+    .footer {
+        padding: 50px 0 20px;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        padding-left: 20px;
+        padding-right: 20px;
+        gap: 30px;
+    }
+
+    .footer-section {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding-bottom: 20px;
+    }
+
+    .footer-section:last-child {
+        border-bottom: none;
+    }
+
+    .newsletter-form {
+        max-width: 100%;
+    }
+
+    .footer-bottom {
+        margin-top: 40px;
+    }
+}
