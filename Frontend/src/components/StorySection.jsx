@@ -11,7 +11,7 @@ const StorySection = () => {
         <section ref={ref} className={`story-section container ${isVisible ? 'fade-in' : ''}`} style={{ opacity: isVisible ? 1 : 0 }}>
             <div className="story-content">
                 <div className="story-image">
-                    <img src={storyImg} alt="Weaving loom" />
+                    <img src={storyImg} alt="Weaving loom" loading="lazy" />
                 </div>
                 <div className="story-text">
                     <h3>HANDWOVEN STORIES</h3>

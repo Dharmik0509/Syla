@@ -43,7 +43,7 @@ const CollectionPage = () => {
                     {collection.items.map((product) => (
                         <div key={product.id} className="product-card">
                             <div className="product-image">
-                                <img src={product.image} alt={product.name} />
+                                <img src={product.image} alt={product.name} loading="lazy" />
                                 <div className="quick-view">Quick View</div>
                             </div>
                             <div className="product-info">

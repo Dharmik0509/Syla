@@ -41,7 +41,7 @@ const FeaturedCollections = () => {
                 {collections.map(item => (
                     <div key={item.id} className="collection-card">
                         <div className="card-image">
-                            <img src={item.image} alt={item.title} />
+                            <img src={item.image} alt={item.title} loading="lazy" />
                             <Link to={item.path} className="overlay-hover">
                                 <span className="explore-text">Explore</span>
                             </Link>

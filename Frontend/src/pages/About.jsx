@@ -12,7 +12,7 @@ const About = () => {
 
                 <div className="story-content" style={{ flexDirection: 'row', gap: '4rem' }}>
                     <div className="story-image" style={{ flex: 1 }}>
-                        <img src={imgStory} alt="Our Story" style={{ width: '100%', height: 'auto', borderRadius: '4px' }} />
+                        <img src={imgStory} alt="Our Story" loading="lazy" style={{ width: '100%', height: 'auto', borderRadius: '4px' }} />
                     </div>
                     <div className="story-text" style={{ flex: 1 }}>
                         <h2 style={{ marginBottom: '1.5rem', fontFamily: 'Cinzel, serif' }}>Weaving Heritage into Modernity</h2>
