@@ -26,45 +26,39 @@ const generateProducts = (baseImage, categoryName, count = 6) => {
 };
 
 export const productsData = {
-    sarees: {
-        title: "Katan Silk Sarees",
-        description: "Elegant and timeless Banarasi sarees.",
-        items: [
-            ...generateProducts(imgSarees, "Saree", 4),
-            { id: 's-5', name: "Katan Silk Jangla", price: "₹ 45,000", image: imgProd1 },
-            { id: 's-6', name: "Gold Zari Katan", price: "₹ 52,000", image: imgProd2 },
-            { id: 's-7', name: "Tissue Silk", price: "₹ 38,500", image: imgProd3 },
-            { id: 's-8', name: "Traditional Banarasi", price: "₹ 60,000", image: imgProd4 }
-        ]
+    "3pc-set-kurti": {
+        title: "3pc Set Kurti",
+        description: "Elegant and stylish 3-piece kurti sets.",
+        items: generateProducts(imgSuits, "Kurti Set", 6)
     },
-    lehengas: {
-        title: "Bridal Lehengas",
-        description: "Handcrafted lehengas for your special day.",
-        items: generateProducts(imgLehengas, "Lehenga", 8)
+    "casual-dress": {
+        title: "Casual Dress",
+        description: "Comfortable and chic casual dresses.",
+        items: generateProducts(imgFabrics, "Casual Dress", 6)
     },
-    suits: {
-        title: "Designer Suits",
-        description: "Contemporary and traditional suits.",
-        items: generateProducts(imgSuits, "Suit", 6)
+    "gown": {
+        title: "Designer Gown",
+        description: "Stunning gowns for evening wear.",
+        items: generateProducts(imgLehengas, "Gown", 6)
     },
-    dupattas: {
-        title: "Handwoven Dupattas",
-        description: "Add a touch of elegance with our dupattas.",
-        items: generateProducts(imgDupattas, "Dupatta", 6)
+    "indo-western": {
+        title: "Indo Western",
+        description: "Fusion of Indian traditions and western styles.",
+        items: generateProducts(imgBlouses, "Indo Western", 6)
     },
-    fabrics: {
-        title: "Premium Fabrics",
-        description: "Silk fabrics for custom tailoring.",
-        items: generateProducts(imgFabrics, "Fabric", 6)
+    "choli-saree": {
+        title: "Choli Saree",
+        description: "Traditional choli sarees with a modern twist.",
+        items: generateProducts(imgSarees, "Choli Saree", 6)
     },
-    blouses: {
-        title: "Designer Blouses",
-        description: "Perfectly fitted blouses.",
-        items: generateProducts(imgBlouses, "Blouse", 6)
+    "chaniya-choli": {
+        title: "Chaniya Choli",
+        description: "Vibrant chaniya cholis for festive occasions.",
+        items: generateProducts(imgDupattas, "Chaniya Choli", 6)
     },
-    gifts: {
-        title: "Gifting Collections",
-        description: "Perfect gifts for loved ones.",
-        items: generateProducts(imgGifts, "Gift", 6)
+    "choli-suit": {
+        title: "Choli Suit",
+        description: "Perfect blend of choli and suit styles.",
+        items: generateProducts(imgGifts, "Choli Suit", 6)
     }
 };

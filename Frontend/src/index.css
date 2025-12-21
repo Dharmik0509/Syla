@@ -2,8 +2,9 @@
 
 :root {
   /* Colors */
-  --color-text-primary: rgb(83, 62, 45);
-  --color-background-primary: #fff;
+  /* --color-text-primary: rgb(83, 62, 45); */
+  --color-text-primary: #523b35;
+  --color-background-primary: #FFFFF0;
   --color-background-secondary: rgb(253, 251, 247);
   /* Detailed off-white */
   --color-accent-gold: #c5a059;

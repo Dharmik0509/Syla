@@ -18,17 +18,29 @@
     margin-bottom: 15px;
     overflow: hidden;
     aspect-ratio: 3/4;
+    /* Enhanced 3D Effect */
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    /* Stronger base shadow */
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
 .product-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.product-card:hover .product-image {
+    transform: translateY(-8px);
+    /* Deeper lift */
+    /* Deep shadow */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
 }
 
 .product-card:hover .product-image img {
-    transform: scale(1.03);
+    transform: scale(1.05);
 }
 
 .quick-view {

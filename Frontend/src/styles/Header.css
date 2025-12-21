@@ -3,7 +3,7 @@
     top: 0;
     width: 100%;
     z-index: 1000;
-    background-color: rgba(26, 60, 52, 0.75);
+    background-color: #0F2B1D;
     /* Lower opacity for glass effect */
     backdrop-filter: blur(12px);
     /* Glass blur */
@@ -16,7 +16,7 @@
 }
 
 .header.scrolled {
-    background-color: rgba(26, 60, 52, 0.85);
+    background-color: #0F2B1D;
     /* Slightly more opaque when scrolled */
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
@@ -25,13 +25,12 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-
-
 .main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 40px;
+    padding: 5px 40px;
+    /* Reduced padding to accommodate larger logo */
 }
 
 .header-left,
@@ -51,12 +50,22 @@
     text-align: center;
 }
 
-.logo-text {
-    font-family: var(--font-family-heading);
-    font-size: 2.5rem;
-    letter-spacing: 2px;
-    font-weight: 700;
-    color: inherit;
+.logo-link {
+    display: inline-block;
+    line-height: 0;
+}
+
+.logo-img {
+    height: 85px;
+    /* Significantly larger */
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+    margin-top: 10px;
+}
+
+.logo-link:hover .logo-img {
+    transform: scale(1.05);
 }
 
 .icon-btn {
@@ -66,48 +75,48 @@
     color: inherit;
 }
 
-
-
 .hamburger-btn {
     margin-right: 20px;
     display: flex;
     align-items: center;
 }
 
-/* Sidebar Styles */
+/* --- SIDEBAR OVERLAY STYLES (Rolls-Royce Style) --- */
 .sidebar {
     position: fixed;
     top: 0;
     left: 0;
-    height: 100vh;
     width: 100vw;
-    /* Full Screen */
-    max-width: 100%;
+    height: 100vh;
     background-color: #0b1a15;
-    /* Very Dark Green content background */
+    /* Deep dark green background */
     z-index: 2000;
-    transform: translateX(-100%);
-    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    /* Elegant slow slide */
-    box-shadow: none;
-    color: #fff;
-    text-align: left;
+
+    /* Fade In/Out Animation instead of Slide */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s step-end;
+
     display: flex;
     flex-direction: row;
-    /* Split View */
+    color: #fff;
+    text-align: left;
 }
 
 .sidebar.open {
-    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s step-start;
 }
 
+/* Sidebar Overlay (Backdrop) - merged into main sidebar or kept for depth */
 .sidebar-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.4);
     z-index: 1500;
     opacity: 0;
     visibility: hidden;
@@ -122,7 +131,6 @@
 /* Sidebar Left (Menu Content) */
 .sidebar-left {
     width: 35%;
-    /* Aesthetic 35/65 split */
     min-width: 350px;
     height: 100%;
     display: flex;
@@ -136,24 +144,20 @@
 .sidebar-header {
     display: flex;
     justify-content: flex-end;
-    /* Align close button to right */
     align-items: center;
     margin-bottom: 60px;
-    /* No border, clean look */
     background: transparent;
     color: #fff;
 }
 
 .sidebar-title {
     display: none;
-    /* Hide standard title for clean look */
 }
 
 .close-btn {
     background: none;
     border: none;
     font-size: 1.5rem;
-    /* Smaller, refined X */
     font-family: var(--font-family-body);
     font-weight: 300;
     letter-spacing: 2px;
@@ -179,66 +183,71 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* Center menu vertically */
     padding-right: 50px;
-    /* Space from edge */
 }
 
 /* Sidebar Links */
 .sidebar-links {
     list-style: none;
     text-align: right;
-    /* Right align menu items */
 }
 
+/* --- STAGGERED ANIMATION ITEMS --- */
 .sidebar-links li {
     margin-bottom: 25px;
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(40px);
+    /* Start lower */
+    /* Closing: Fast Fade Out */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition-delay: 0s;
 }
 
+/* Open State */
 .sidebar.open .sidebar-links li {
-    animation: fadeUp 0.8s ease forwards;
+    opacity: 1;
+    transform: translateY(0);
+    /* Opening: Elegant Slide Up with Delay */
+    transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* Stagger Delays - refined */
+/* Stagger Delays - Wait for overlay to start fading in */
 .sidebar.open .sidebar-links li:nth-child(1) {
-    animation-delay: 0.3s;
+    transition-delay: 0.1s;
 }
 
 .sidebar.open .sidebar-links li:nth-child(2) {
-    animation-delay: 0.35s;
+    transition-delay: 0.15s;
 }
 
 .sidebar.open .sidebar-links li:nth-child(3) {
-    animation-delay: 0.4s;
+    transition-delay: 0.2s;
 }
 
 .sidebar.open .sidebar-links li:nth-child(4) {
-    animation-delay: 0.45s;
+    transition-delay: 0.25s;
 }
 
 .sidebar.open .sidebar-links li:nth-child(5) {
-    animation-delay: 0.5s;
+    transition-delay: 0.3s;
 }
 
 .sidebar.open .sidebar-links li:nth-child(6) {
-    animation-delay: 0.55s;
+    transition-delay: 0.35s;
 }
 
 .sidebar.open .sidebar-links li:nth-child(7) {
-    animation-delay: 0.6s;
+    transition-delay: 0.4s;
 }
+
 
 .sidebar-links a {
     font-family: var(--font-family-body);
-    /* Sans-serif for modern look */
     font-size: 1.2rem;
     font-weight: 400;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.5);
-    /* Dimmed by default */
     transition: color 0.4s ease, transform 0.4s ease;
     display: inline-block;
     position: relative;
@@ -248,12 +257,8 @@
 .sidebar-links a:hover {
     color: #fff;
     transform: translateX(-10px);
-    /* Move left slightly on hover */
     padding-left: 0;
 }
-
-
-
 
 /* Sidebar Right (Image Preview) */
 .sidebar-right {
@@ -266,20 +271,15 @@
 
 .sidebar-image-container {
     position: absolute;
-    /* Stack images */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-size: cover;
-    /* Cover on all by default, will override for desktop */
     background-position: center;
     opacity: 0;
-    /* Hidden by default */
     transition: opacity 0.8s ease, transform 1.2s ease;
-    /* Smooth cross-fade and slow zoom */
     transform: scale(1.1);
-    /* Start slightly zoomed in for impact */
     z-index: 1;
 }
 
@@ -289,13 +289,6 @@
     z-index: 2;
 }
 
-/* Ensure image covers the full area */
-.sidebar-image-container {
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
 .sidebar-image-overlay {
     position: absolute;
     top: 0;
@@ -303,7 +296,6 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.2);
-    /* Slight tint for readability if text overlay exists */
 }
 
 .sidebar-footer-links {
@@ -328,30 +320,88 @@
     letter-spacing: 1px;
 }
 
-/* Mobile Adjustments */
-@media (max-width: 768px) {
+/* --- RESPONSIVE ADJUSTMENTS --- */
+
+/* Extra Small Devices (Mobile Phone Portrait) */
+@media (max-width: 480px) {
+    .main-header {
+        padding: 5px 15px;
+    }
+
+    .logo-img {
+        height: 60px;
+    }
+
+    .sidebar-left {
+        padding: 80px 20px 40px;
+        width: 100%;
+    }
+
+    .sidebar-links a {
+        font-size: 1.2rem;
+    }
+}
+
+/* Mobile & Tablet Devices (481px - 1024px) */
+@media (max-width: 1024px) {
     .sidebar {
-        width: 85%;
         flex-direction: column;
     }
 
     .sidebar-right {
         display: none;
-        /* Hide image on small screens */
     }
 
     .sidebar-left {
         width: 100%;
+        padding: 80px 40px;
+        align-items: center;
     }
 
-    .sidebar-image-container {
-        background-size: cover;
+    .sidebar-header {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .sidebar-content {
+        padding-right: 0;
+        width: 100%;
+        align-items: center;
+    }
+
+    .sidebar-links {
+        text-align: center;
+        width: 100%;
+    }
+
+    .sidebar-links li {
+        transform: translateY(40px);
+    }
+
+    /* Open state override for mobile to keep direction consistent */
+    .sidebar.open .sidebar-links li {
+        transform: translateY(0);
+    }
+
+    .sidebar:not(.open) .sidebar-links li {
+        transform: translateY(40px);
+    }
+
+    .sidebar-links a {
+        font-size: 1.5rem;
     }
 }
 
-@keyframes fadeUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
+@media (min-width: 1441px) {
+    .main-header {
+        padding: 5px 60px;
+    }
+
+    .sidebar-left {
+        min-width: 400px;
+    }
+
+    .sidebar-links a {
+        font-size: 1.4rem;
     }
 }
