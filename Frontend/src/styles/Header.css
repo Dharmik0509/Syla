@@ -88,9 +88,10 @@
     width: 100vw;
     height: 100vh;
     /* Rolex-like Gradient matching Header */
-    background: linear-gradient(180deg, #1A4D33 0%, #0F2B1D 100%);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    /* Rolex-like Gradient: More transparent for visible blur */
+    background: linear-gradient(180deg, rgba(26, 77, 51, 0.7) 0%, rgba(15, 43, 29, 0.8) 100%);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     z-index: 2000;
 
     /* Fade In/Out Animation instead of Slide */
