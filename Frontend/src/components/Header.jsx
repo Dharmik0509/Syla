@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
+import API_HOST from '../config';
 
 // Import Sidebar Images
 import imgSarees from '../assets/images/IMG_6925.JPG';
@@ -21,13 +22,21 @@ const menuItems = [
   { name: 'Choli suit', image: imgGifts, path: '/collections/choli-suit' },
 ];
 
+const isVideo = (url) => {
+  if (!url) return false;
+  return url.match(/\.(mp4|mov|avi|mkv)/i); // Removed $ anchor to handle query params
+};
+
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(null);
   const navigate = useNavigate();
 
+  const [categories, setCategories] = useState([]);
+
   useEffect(() => {
+    fetchCategories();
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
@@ -35,6 +44,37 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${API_HOST}/api/get-categories`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Map backend categories to menu structure
+        // Assuming categories have name, slug (or we construct path from name)
+        // If categories don't have images yet, we might need a placeholder or just omit image
+        const dynamicItems = data.map(cat => ({
+          name: cat.name,
+          // Use category image if available, else fallback or random from assets? 
+          // For now, let's try to pass the first product image or category image if available.
+          // Adjusting based on Category Schema viewing previously, it has parentCategory etc.
+          image: cat.image || imgSarees, // Fallback image for now
+          path: `/collections/${cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-')}`
+        }));
+        setCategories(dynamicItems);
+      }
+    } catch (error) {
+      console.error("Failed to fetch menu items", error);
+    }
+  };
+
+  const menuItemsToDisplay = categories.length > 0 ? categories : menuItems;
+
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -88,28 +128,70 @@ const Header = () => {
           </div>
           <div className="sidebar-content">
             <ul className="sidebar-links">
-              <li><Link to="/" onClick={toggleSidebar}>HOME</Link></li>
-              <li><Link to="/about" onClick={toggleSidebar}>ABOUT US</Link></li>
-              {menuItems.map((item) => (
-                <li key={item.name}
-                  onMouseEnter={() => setActiveImage(item.image)}
-                  onClick={() => setActiveImage(item.image)}
-                >
-                  <span onClick={() => handleNavigation(item.path)} style={{ cursor: 'pointer' }}>{item.name}</span>
-                </li>
-              ))}
-              <li><Link to="/contact" onClick={toggleSidebar}>CONTACT</Link></li>
+              {(() => {
+                const totalItems = 2 + menuItemsToDisplay.length + 1; // Home, About, Categories, Contact
+
+                // Helper to get delay based on direction
+                // OPEN (isSidebarOpen=true): Bottom -> Top (Reverse Index)
+                // CLOSE (isSidebarOpen=false): Top -> Bottom (Normal Index)
+                const getDelay = (index) => {
+                  if (isSidebarOpen) {
+                    // Opening: Start from bottom
+                    return `${0.1 + ((totalItems - 1 - index) * 0.1)}s`;
+                  } else {
+                    // Closing: Start from top
+                    return `${index * 0.1}s`;
+                  }
+                };
+
+                return (
+                  <>
+                    <li style={{ transitionDelay: getDelay(0) }}>
+                      <Link to="/" onClick={toggleSidebar}>HOME</Link>
+                    </li>
+                    <li style={{ transitionDelay: getDelay(1) }}>
+                      <Link to="/about" onClick={toggleSidebar}>ABOUT US</Link>
+                    </li>
+                    {menuItemsToDisplay.map((item, index) => (
+                      <li key={item.name}
+                        style={{ transitionDelay: getDelay(index + 2) }}
+                        onMouseEnter={() => setActiveImage(item.image)}
+                        onClick={() => setActiveImage(item.image)}
+                      >
+                        <span onClick={() => handleNavigation(item.path)} style={{ cursor: 'pointer' }}>{item.name}</span>
+                      </li>
+                    ))}
+                    <li style={{ transitionDelay: getDelay(totalItems - 1) }}>
+                      <Link to="/contact" onClick={toggleSidebar}>CONTACT</Link>
+                    </li>
+                  </>
+                );
+              })()}
             </ul>
           </div>
         </div>
 
         <div className="sidebar-right">
-          {menuItems.map((item) => (
+          {menuItemsToDisplay.map((item) => (
             <div
               key={item.name}
-              className={`sidebar-image-container ${((activeImage === item.image) || (!activeImage && item === menuItems[0])) ? 'active' : ''}`}
-              style={{ backgroundImage: `url(${item.image})` }}
+              className={`sidebar-image-container ${((activeImage === item.image) || (!activeImage && item === menuItemsToDisplay[0])) ? 'active' : ''}`}
             >
+              {item.image && isVideo(item.image) ? (
+                <video
+                  src={item.image}
+                  className="sidebar-media"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                />
+              ) : (
+                <div
+                  className="sidebar-media"
+                  style={{ backgroundImage: `url(${item.image})` }}
+                ></div>
+              )}
               <div className="sidebar-image-overlay"></div>
             </div>
           ))}

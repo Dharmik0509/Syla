@@ -3,7 +3,8 @@
     top: 0;
     width: 100%;
     z-index: 1000;
-    background-color: #0F2B1D;
+    /* Rolex-like Gradient: Subtle sheen from top to bottom */
+    background: linear-gradient(180deg, #1A4D33 0%, #0F2B1D 100%);
     /* Lower opacity for glass effect */
     backdrop-filter: blur(12px);
     /* Glass blur */
@@ -88,14 +89,17 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: #0b1a15;
-    /* Deep dark green background */
+    /* Rolex-like Gradient matching Header */
+    background: linear-gradient(180deg, #1A4D33 0%, #0F2B1D 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     z-index: 2000;
 
     /* Fade In/Out Animation instead of Slide */
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s step-end;
+    /* Increased to 1.0s to allow staggered items to finish */
+    transition: opacity 1.0s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.0s step-end;
 
     display: flex;
     flex-direction: row;
@@ -136,7 +140,7 @@
     display: flex;
     flex-direction: column;
     padding: 60px 40px;
-    background-color: #0b1a15;
+    background-color: transparent;
     position: relative;
     z-index: 2;
 }
@@ -196,49 +200,23 @@
 .sidebar-links li {
     margin-bottom: 25px;
     opacity: 0;
-    transform: translateY(40px);
-    /* Start lower */
+    transform: translateX(-150px);
+    /* Start from further Left */
     /* Closing: Fast Fade Out */
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    /* Slowed down from 0.3s */
     transition-delay: 0s;
 }
 
 /* Open State */
 .sidebar.open .sidebar-links li {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
     /* Opening: Elegant Slide Up with Delay */
     transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* Stagger Delays - Wait for overlay to start fading in */
-.sidebar.open .sidebar-links li:nth-child(1) {
-    transition-delay: 0.1s;
-}
-
-.sidebar.open .sidebar-links li:nth-child(2) {
-    transition-delay: 0.15s;
-}
-
-.sidebar.open .sidebar-links li:nth-child(3) {
-    transition-delay: 0.2s;
-}
-
-.sidebar.open .sidebar-links li:nth-child(4) {
-    transition-delay: 0.25s;
-}
-
-.sidebar.open .sidebar-links li:nth-child(5) {
-    transition-delay: 0.3s;
-}
-
-.sidebar.open .sidebar-links li:nth-child(6) {
-    transition-delay: 0.35s;
-}
-
-.sidebar.open .sidebar-links li:nth-child(7) {
-    transition-delay: 0.4s;
-}
+/* Stagger Delays - Handled dynamically in JSX for infinite items */
 
 
 .sidebar-links a {
@@ -318,6 +296,18 @@
     color: #666;
     text-transform: uppercase;
     letter-spacing: 1px;
+}
+
+/* Media (Video/Image) inside Sidebar Container */
+.sidebar-media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 /* --- RESPONSIVE ADJUSTMENTS --- */
