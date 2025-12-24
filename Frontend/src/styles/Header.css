@@ -3,17 +3,14 @@
     top: 0;
     width: 100%;
     z-index: 1000;
-    /* Rolex-like Gradient: Subtle sheen from top to bottom */
-    background: linear-gradient(180deg, #1A4D33 0%, #0F2B1D 100%);
-    /* Lower opacity for glass effect */
-    backdrop-filter: blur(12px);
-    /* Glass blur */
-    -webkit-backdrop-filter: blur(12px);
-    /* Safari support */
+    /* Rolex-like Gradient: More transparent for visible blur */
+    background: linear-gradient(180deg, rgba(26, 77, 51, 0.7) 0%, rgba(15, 43, 29, 0.8) 100%);
+    /* Strong Blur */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(5px);
     transition: background-color 0.4s ease, color 0.4s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
     color: #fff;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    /* Subtle glass border */
 }
 
 .header.scrolled {
