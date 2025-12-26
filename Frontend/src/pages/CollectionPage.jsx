@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import '../styles/ProductGrid.css';
 import API_HOST from '../config';
+import ProductCardShimmer from '../components/ProductCardShimmer';
 
 const CollectionPage = () => {
     const { categoryId } = useParams();
@@ -55,8 +56,27 @@ const CollectionPage = () => {
 
     if (loading) {
         return (
-            <div className="container" style={{ padding: '4rem 2rem', textAlign: 'center', paddingTop: '100px' }}>
-                <p>Loading collection...</p>
+            <div className="collection-page" style={{ paddingTop: 'var(--header-height)' }}>
+                <div
+                    className="collection-hero"
+                    style={{
+                        backgroundColor: '#f8f5f2',
+                        padding: '4rem 2rem',
+                        textAlign: 'center',
+                        marginBottom: '2rem'
+                    }}
+                >
+                    <h1 style={{ fontFamily: 'Cinzel, serif', fontSize: '2.5rem', marginBottom: '1rem', textTransform: 'capitalize' }}>
+                        Loading...
+                    </h1>
+                </div>
+                <div className="container product-grid-section">
+                    <div className="product-grid">
+                        {Array(8).fill(0).map((_, index) => (
+                            <ProductCardShimmer key={index} />
+                        ))}
+                    </div>
+                </div>
             </div>
         );
     }
@@ -87,18 +107,39 @@ const CollectionPage = () => {
                     <p style={{ textAlign: 'center' }}>No products found in this collection.</p>
                 ) : (
                     <div className="product-grid">
-                        {products.map((product) => (
-                            <Link to={`/product/${product._id}`} key={product._id} className="product-card" style={{ textDecoration: 'none', color: 'inherit' }}>
-                                <div className="product-image">
-                                    <img src={product.images[0] || 'placeholder.jpg'} alt={product.title} loading="lazy" />
-                                    <div className="quick-view">View Details</div>
-                                </div>
-                                <div className="product-info">
-                                    <h4>{product.title}</h4>
-                                    <p>₹{product.price}</p>
-                                </div>
-                            </Link>
-                        ))}
+                        {products.map((product) => {
+                            const hasDiscount = product.discountPercentage > 0;
+                            const discountedPrice = hasDiscount
+                                ? Math.round(product.price - (product.price * (product.discountPercentage / 100)))
+                                : product.price;
+
+                            return (
+                                <Link to={`/product/${product._id}`} key={product._id} className="product-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <div className="product-image">
+                                        <img src={product.images[0] || 'placeholder.jpg'} alt={product.title} loading="lazy" />
+                                        {hasDiscount && (
+                                            <div className="discount-badge">
+                                                {product.discountPercentage}% OFF
+                                            </div>
+                                        )}
+                                        <div className="quick-view">View Details</div>
+                                    </div>
+                                    <div className="product-info">
+                                        <h4>{product.title}</h4>
+                                        <div className="price-container">
+                                            {hasDiscount ? (
+                                                <>
+                                                    <span className="original-price">₹{product.price}</span>
+                                                    <span className="discounted-price">₹{discountedPrice}</span>
+                                                </>
+                                            ) : (
+                                                <p>₹{product.price}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </Link>
+                            );
+                        })}
                     </div>
                 )}
             </div>

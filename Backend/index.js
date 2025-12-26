@@ -10,6 +10,14 @@ const app = express();
 
 app.use(express.json()); // Essential for parsing JSON bodies
 
+// Debug logging
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    console.log('Content-Type:', req.headers['content-type']);
+    console.log('Body:', req.body);
+    next();
+});
+
 const allowedOrigins = [
     "https://syla-official.vercel.app",
     "https://www.syla-official.vercel.app",

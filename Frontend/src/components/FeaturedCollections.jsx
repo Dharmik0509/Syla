@@ -11,19 +11,28 @@ import imgColl3 from '../assets/images/IMG_6948.JPG';
 const FeaturedCollections = () => {
     const [ref, isVisible] = useScrollReveal();
     const [collections, setCollections] = useState([]);
+    const [activeDiscounts, setActiveDiscounts] = useState([]);
 
     useEffect(() => {
-        const fetchCategories = async () => {
+        const fetchData = async () => {
             try {
-                const response = await fetch(`${API_HOST}/api/get-categories`, {
+                // Fetch Categories
+                const catResponse = await fetch(`${API_HOST}/api/get-categories`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
-                const data = await response.json();
-                // Filter top level categories or specific ones. For now, take first 3.
-                // In real app, might want a "featured" flag on category.
-                if (data.length > 0) {
-                    setCollections(data.slice(0, 3));
+                const catData = await catResponse.json();
+
+                // Fetch Public Discounts
+                const discountResponse = await fetch(`${API_HOST}/api/fetch-public-discounts`);
+                const discountData = await discountResponse.json();
+
+                if (Array.isArray(discountData)) {
+                    setActiveDiscounts(discountData);
+                }
+
+                if (catData.length > 0) {
+                    setCollections(catData.slice(0, 3));
                 } else {
                     // Fallback
                     setCollections([
@@ -33,7 +42,8 @@ const FeaturedCollections = () => {
                     ]);
                 }
             } catch (error) {
-                console.error("Error fetching collections:", error);
+                console.error("Error fetching data:", error);
+                // Fallback on error
                 setCollections([
                     { _id: 1, name: "Banarasi Sarees", image: imgColl1, slug: "sarees" },
                     { _id: 2, name: "Bridal Lehengas", image: imgColl2, slug: "lehengas" },
@@ -41,8 +51,17 @@ const FeaturedCollections = () => {
                 ]);
             }
         };
-        fetchCategories();
+        fetchData();
     }, []);
+
+    const getDiscountForCategory = (categoryId) => {
+        const rule = activeDiscounts.find(d =>
+            d.isActive &&
+            d.appliesTo === 'CATEGORY' &&
+            d.targetValues.includes(categoryId)
+        );
+        return rule ? rule.value : null;
+    };
 
     return (
         <section ref={ref} className={`featured-collections container ${isVisible ? 'fade-in' : ''}`} style={{ opacity: isVisible ? 1 : 0 }}>
@@ -51,20 +70,39 @@ const FeaturedCollections = () => {
                 <h2>Explore Our Heritage</h2>
             </div>
             <div className="collections-grid">
-                {collections.map(item => (
-                    <div key={item._id} className="collection-card">
-                        <div className="card-image">
-                            {/* Use item.image from DB or fallback to imported images based on index or placeholder */}
-                            <img src={item.image || imgColl1} alt={item.name} loading="lazy" />
-                            <Link to={`/collections/${item.slug}`} className="overlay-hover">
-                                <span className="explore-text">Explore</span>
-                            </Link>
+                {collections.map(item => {
+                    const discountValue = getDiscountForCategory(item._id);
+                    return (
+                        <div key={item._id} className="collection-card" style={{ position: 'relative' }}>
+                            <div className="card-image">
+                                {/* Use item.image from DB or fallback to imported images based on index or placeholder */}
+                                <img src={item.image || imgColl1} alt={item.name} loading="lazy" />
+                                {discountValue && (
+                                    <div className="category-discount-badge" style={{
+                                        position: 'absolute',
+                                        top: '10px',
+                                        left: '10px',
+                                        backgroundColor: '#d9534f',
+                                        color: 'white',
+                                        padding: '5px 10px',
+                                        borderRadius: '4px',
+                                        fontWeight: 'bold',
+                                        zIndex: 5,
+                                        boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                                    }}>
+                                        {discountValue}% OFF
+                                    </div>
+                                )}
+                                <Link to={`/collections/${item.slug}`} className="overlay-hover">
+                                    <span className="explore-text">Explore</span>
+                                </Link>
+                            </div>
+                            <div className="card-info">
+                                <h3>{item.name}</h3>
+                            </div>
                         </div>
-                        <div className="card-info">
-                            <h3>{item.name}</h3>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </section>
     );

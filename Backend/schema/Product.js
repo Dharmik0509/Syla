@@ -7,7 +7,6 @@ const productSchema = new mongoose.Schema({
 
     // Pricing & Inventory
     price: { type: Number, required: true },
-    sku: { type: String, unique: true }, // Stock Keeping Unit
     stockQuantity: { type: Number, default: 0 },
 
     // Discounts
@@ -27,6 +26,7 @@ const productSchema = new mongoose.Schema({
     // Meta
     isActive: { type: Boolean, default: true },
     isFeatured: { type: Boolean, default: false },
+    isNewArrival: { type: Boolean, default: false }, // New field
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });

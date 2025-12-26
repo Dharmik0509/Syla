@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import '../../styles/ProductManager.css'; // Reusing styles
 import API_HOST from '../../config';
+import { useAdminUI } from '../../context/AdminUIContext';
 
 const CategoryManager = () => {
     const [categories, setCategories] = useState([]);
@@ -10,6 +11,8 @@ const CategoryManager = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [currentId, setCurrentId] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
+    const { showToast, confirmAction } = useAdminUI();
 
     useEffect(() => {
         fetchCategories();
@@ -49,6 +52,7 @@ const CategoryManager = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitting(true);
         try {
             const token = localStorage.getItem('adminToken');
 
@@ -75,31 +79,44 @@ const CategoryManager = () => {
                 setEditMode(false);
                 setCurrentId(null);
                 fetchCategories();
-                alert(editMode ? 'Category updated' : 'Category added');
+                showToast(editMode ? 'Category updated' : 'Category added', 'success');
             } else {
-                alert('Failed to save category');
+                showToast('Failed to save category', 'error');
             }
         } catch (error) {
             console.error("Error saving category:", error);
+        } finally {
+            setSubmitting(false);
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("Delete this category?")) return;
-        try {
-            const token = localStorage.getItem('adminToken');
-            await fetch(`${API_HOST}/api/delete-category`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': token
-                },
-                body: JSON.stringify({ id })
-            });
-            fetchCategories();
-        } catch (error) {
-            console.error("Error deleting category:", error);
-        }
+    const handleDelete = (id) => {
+        confirmAction("Delete this category?", async () => {
+            setSubmitting(true);
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch(`${API_HOST}/api/delete-category`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify({ id })
+                });
+
+                if (response.ok) {
+                    showToast('Category deleted', 'success');
+                    fetchCategories();
+                } else {
+                    showToast('Failed to delete category', 'error');
+                }
+            } catch (error) {
+                console.error("Error deleting category:", error);
+                showToast('Error deleting category', 'error');
+            } finally {
+                setSubmitting(false);
+            }
+        });
     };
 
     return (
@@ -135,8 +152,8 @@ const CategoryManager = () => {
                             style={{ padding: '5px' }}
                         />
                         <div style={{ display: 'flex', gap: '10px' }}>
-                            <button type="submit" className="save-btn" style={{ width: 'auto' }}>
-                                {editMode ? 'Update Category' : 'Add Category'}
+                            <button type="submit" className="save-btn" style={{ width: 'auto' }} disabled={submitting}>
+                                {submitting ? 'Saving...' : (editMode ? 'Update Category' : 'Add Category')}
                             </button>
                             {editMode && (
                                 <button type="button" onClick={handleCancelEdit} style={{ padding: '10px', background: '#555', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
@@ -175,7 +192,9 @@ const CategoryManager = () => {
                                     <td>{cat.parentCategory?.name || '-'}</td>
                                     <td>
                                         <button className="edit-btn" onClick={() => handleEdit(cat)} style={{ marginRight: '5px', padding: '5px 10px', cursor: 'pointer' }}>Edit</button>
-                                        <button className="delete-btn" onClick={() => handleDelete(cat._id)}>Delete</button>
+                                        <button className="delete-btn" onClick={() => handleDelete(cat._id)} disabled={submitting}>
+                                            {submitting ? '...' : 'Delete'}
+                                        </button>
                                     </td>
                                 </tr>
                             ))}

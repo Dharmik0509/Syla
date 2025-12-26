@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import API_HOST from '../config';
+import '../styles/ProductDetails.css';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -33,11 +34,27 @@ const ProductDetails = () => {
         }
     };
 
+    const hasDiscount = product?.discountPercentage > 0;
+    const discountedPrice = (product && hasDiscount)
+        ? Math.round(product.price - (product.price * (product.discountPercentage / 100)))
+        : product?.price;
+
     const handleWhatsAppOrder = () => {
         if (!product) return;
-        const message = `Hi, I would like to order ${product.title} (SKU: ${product.sku}). Price: ₹${product.price}`;
-        const url = `https://wa.me/919999999999?text=${encodeURIComponent(message)}`; // Replace with real number
+        const priceText = hasDiscount ? `Original: ₹${product.price}, Deal Price: ₹${discountedPrice}` : `Price: ₹${product.price}`;
+        const message = `Hi, I would like to order ${product.title} (SKU: ${product.sku}). ${priceText}`;
+        const url = `https://wa.me/919999999999?text=${encodeURIComponent(message)}`;
         window.open(url, '_blank');
+    };
+
+    const nextImage = () => {
+        if (!product || !product.images) return;
+        setSelectedImage((prev) => (prev + 1) % product.images.length);
+    };
+
+    const prevImage = () => {
+        if (!product || !product.images) return;
+        setSelectedImage((prev) => (prev - 1 + product.images.length) % product.images.length);
     };
 
     if (loading) return <div className="container" style={{ padding: '100px' }}>Loading...</div>;
@@ -48,27 +65,75 @@ const ProductDetails = () => {
             <div className="container" style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
                 {/* Images Section */}
                 <div className="product-gallery" style={{ flex: '1 1 400px' }}>
-                    <div className="main-image" style={{ marginBottom: '20px' }}>
-                        <img
-                            src={product.images[selectedImage] || 'placeholder.jpg'}
-                            alt={product.title}
-                            style={{ width: '100%', borderRadius: '8px', objectFit: 'cover' }}
-                        />
+                    <div className="main-image-container" style={{ position: 'relative' }}>
+                        {hasDiscount && (
+                            <div style={{
+                                position: 'absolute',
+                                top: '10px',
+                                right: '10px',
+                                backgroundColor: '#d9534f',
+                                color: 'white',
+                                padding: '6px 12px',
+                                borderRadius: '4px',
+                                fontSize: '1rem',
+                                fontWeight: 'bold',
+                                zIndex: 10
+                            }}>
+                                {product.discountPercentage}% OFF
+                            </div>
+                        )}
+
+                        {/* Left Arrow */}
+                        {product.images.length > 1 && (
+                            <button className="slider-arrow arrow-left" onClick={prevImage}>
+                                &#10094;
+                            </button>
+                        )}
+
+                        {/* Main Image with Animation Key */}
+                        {product.images[selectedImage].match(/\.(mp4|mov|avi|mkv)$/i) ? (
+                            <video
+                                key={selectedImage}
+                                src={product.images[selectedImage]}
+                                className="product-detail-image"
+                                controls
+                                autoPlay
+                                loop
+                                muted
+                            />
+                        ) : (
+                            <img
+                                key={selectedImage}
+                                src={product.images[selectedImage] || 'placeholder.jpg'}
+                                alt={product.title}
+                                className="product-detail-image"
+                            />
+                        )}
+
+                        {/* Right Arrow */}
+                        {product.images.length > 1 && (
+                            <button className="slider-arrow arrow-right" onClick={nextImage}>
+                                &#10095;
+                            </button>
+                        )}
                     </div>
                     <div className="thumbnail-list" style={{ display: 'flex', gap: '10px' }}>
                         {product.images.map((img, idx) => (
+
                             <img
                                 key={idx}
                                 src={img}
                                 alt={`Thumbnail ${idx}`}
                                 onClick={() => setSelectedImage(idx)}
+                                className="thumbnail-img"
                                 style={{
                                     width: '80px',
                                     height: '80px',
                                     objectFit: 'cover',
                                     borderRadius: '4px',
                                     cursor: 'pointer',
-                                    border: selectedImage === idx ? '2px solid #0F2B1D' : 'none'
+                                    border: selectedImage === idx ? '2px solid #0F2B1D' : '2px solid transparent',
+                                    opacity: selectedImage === idx ? 1 : 0.6
                                 }}
                             />
                         ))}
@@ -78,9 +143,19 @@ const ProductDetails = () => {
                 {/* Info Section */}
                 <div className="product-info" style={{ flex: '1 1 400px' }}>
                     <h1 style={{ fontFamily: 'Cinzel, serif', fontSize: '2.5rem', marginBottom: '10px' }}>{product.title}</h1>
-                    <p style={{ fontSize: '1.5rem', color: '#0F2B1D', fontWeight: 'bold', marginBottom: '20px' }}>₹{product.price}</p>
 
-                    <div className="product-description" style={{ marginBottom: '30px', color: '#555', lineHeight: '1.6' }}>
+                    <div style={{ marginBottom: '20px' }}>
+                        {hasDiscount ? (
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '15px' }}>
+                                <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '1.2rem' }}>₹{product.price}</span>
+                                <span style={{ fontSize: '2rem', color: '#d9534f', fontWeight: 'bold' }}>₹{discountedPrice}</span>
+                            </div>
+                        ) : (
+                            <p style={{ fontSize: '1.5rem', color: '#0F2B1D', fontWeight: 'bold' }}>₹{product.price}</p>
+                        )}
+                    </div>
+
+                    <div className="product-description" style={{ marginBottom: '30px', color: '#555', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
                         <p>{product.description}</p>
                     </div>
 
@@ -104,7 +179,7 @@ const ProductDetails = () => {
                     >
                         Order via WhatsApp
                     </button>
-                    <p style={{ marginTop: '10px', fontSize: '0.9rem', color: '#777' }}>
+                    <p style={{ marginTop: '10px', fontSize: '0.9rem', color: '#777', display: 'none' }}>
                         SKU: {product.sku}
                     </p>
                 </div>

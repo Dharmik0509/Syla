@@ -1,0 +1,53 @@
+/* Shimmer Animation Definition */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.shimmer-wrapper {
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: shimmer;
+    animation-timing-function: linear;
+    background: #f6f7f8;
+    background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+    background-size: 1000px 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Specific Shimmer Card Styles matching Product Card */
+.shimmer-card {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.shimmer-image {
+    width: 100%;
+    aspect-ratio: 3/4;
+    /* Matches product image ratio roughly */
+    border-radius: 4px;
+    /* Optional rounded corners */
+}
+
+.shimmer-title {
+    height: 20px;
+    width: 80%;
+    margin-top: 10px;
+    border-radius: 4px;
+}
+
+.shimmer-price {
+    height: 16px;
+    width: 40%;
+    margin-top: 5px;
+    border-radius: 4px;
+}

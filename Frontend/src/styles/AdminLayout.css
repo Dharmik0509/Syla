@@ -6,19 +6,21 @@
 }
 
 .admin-sidebar {
-    background-color: #0F2B1D;
+    background: linear-gradient(180deg, #1A4D33 0%, #0F2B1D 100%);
     color: white;
-    transition: width 0.3s ease;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 100;
 }
 
 .admin-sidebar.open {
-    width: 250px;
+    width: 260px;
 }
 
 .admin-sidebar.closed {
-    width: 60px;
+    width: 70px;
 }
 
 .admin-logo {
@@ -53,16 +55,27 @@
 .admin-nav li a {
     display: flex;
     align-items: center;
-    padding: 15px 20px;
-    color: rgba(255, 255, 255, 0.7);
+    padding: 16px 25px;
+    color: rgba(255, 255, 255, 0.6);
     text-decoration: none;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+    font-size: 0.95rem;
 }
 
-.admin-nav li a:hover,
+.admin-nav li a:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+    padding-left: 30px;
+    /* Slide effect */
+}
+
 .admin-nav li.active a {
     background-color: rgba(255, 255, 255, 0.1);
     color: white;
+    border-left-color: #4CAF50;
+    /* Active indicator */
+    font-weight: 500;
 }
 
 .admin-nav .icon {
@@ -134,7 +147,7 @@
         height: 100vh;
         z-index: 1000;
         width: 0;
-        /* Hidden by default on mobile */
+        /* Hidden by default */
         overflow: hidden;
     }
 
@@ -150,5 +163,17 @@
     .admin-main {
         width: 100%;
         margin-left: 0;
+    }
+
+    /* Overlay when sidebar is open */
+    .admin-sidebar.open::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 250px;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: -1;
     }
 }

@@ -27,7 +27,7 @@ const isVideo = (url) => {
   return url.match(/\.(mp4|mov|avi|mkv)/i); // Removed $ anchor to handle query params
 };
 
-const Header = () => {
+const Header = ({ isAnnouncementVisible }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(null);
@@ -87,7 +87,7 @@ const Header = () => {
 
   return (
     <>
-      <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
+      <header className={`header ${isScrolled ? 'scrolled' : ''} ${isAnnouncementVisible ? 'with-announcement' : ''}`}>
 
 
         <div className="main-header">
@@ -104,7 +104,7 @@ const Header = () => {
 
           <div className="logo-container">
             <Link to="/" className="logo-link">
-              <img src="/Sylalogo.png" alt="Syla" className="logo-img" />
+              <img src="/Syla3d_logo.png" alt="Syla" className="logo-img" />
             </Link>
           </div>
 

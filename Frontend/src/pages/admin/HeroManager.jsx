@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import '../../styles/ProductManager.css'; // Reuse styles for now
 import API_HOST from '../../config';
+import { useAdminUI } from '../../context/AdminUIContext';
 
 const HeroManager = () => {
     const [slides, setSlides] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+    const { showToast, confirmAction } = useAdminUI();
     const [formData, setFormData] = useState({
         title: '',
         subtitle: '',
@@ -35,6 +38,13 @@ const HeroManager = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (Number(formData.order) < 0) {
+            showToast("Order cannot be negative!", "error");
+            return;
+        }
+
+        setSubmitting(true);
         try {
             const token = localStorage.getItem('adminToken');
 
@@ -56,34 +66,42 @@ const HeroManager = () => {
             });
 
             if (response.ok) {
-                alert('Slide added successfully!');
+                showToast('Slide added successfully!', 'success');
                 fetchSlides();
                 setFormData({ title: '', subtitle: '', link: '', order: 0 });
                 setSelectedImage(null);
             } else {
-                alert('Failed to add slide');
+                showToast('Failed to add slide', 'error');
             }
         } catch (error) {
             console.error("Error adding slide:", error);
+        } finally {
+            setSubmitting(false);
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("Delete this slide?")) return;
-        try {
-            const token = localStorage.getItem('adminToken');
-            await fetch(`${API_HOST}/api/delete-hero-slide`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': token
-                },
-                body: JSON.stringify({ id })
-            });
-            fetchSlides();
-        } catch (error) {
-            console.error("Error deleting slide:", error);
-        }
+    const handleDelete = (id) => {
+        confirmAction("Delete this slide?", async () => {
+            setSubmitting(true);
+            try {
+                const token = localStorage.getItem('adminToken');
+                await fetch(`${API_HOST}/api/delete-hero-slide`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify({ id })
+                });
+                showToast('Slide deleted successfully', 'success');
+                fetchSlides();
+            } catch (error) {
+                console.error("Error deleting slide:", error);
+                showToast('Error deleting slide', 'error');
+            } finally {
+                setSubmitting(false);
+            }
+        });
     };
 
     return (
@@ -104,14 +122,16 @@ const HeroManager = () => {
                                 onChange={e => setSelectedImage(e.target.files[0])}
                                 required
                             />
-                            <input type="number" placeholder="Order" value={formData.order} onChange={e => setFormData({ ...formData, order: e.target.value })} />
+                            <input type="number" min="0" placeholder="Order" value={formData.order} onChange={e => setFormData({ ...formData, order: e.target.value })} />
                         </div>
                         <div className="form-row">
                             <input placeholder="Title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
                             <input placeholder="Subtitle" value={formData.subtitle} onChange={e => setFormData({ ...formData, subtitle: e.target.value })} />
                         </div>
                         <input placeholder="Link (Optional)" value={formData.link} onChange={e => setFormData({ ...formData, link: e.target.value })} />
-                        <button type="submit" className="save-btn">Add Slide</button>
+                        <button type="submit" className="save-btn" disabled={submitting}>
+                            {submitting ? 'Adding...' : 'Add Slide'}
+                        </button>
                     </form>
                 </div>
 
@@ -135,7 +155,9 @@ const HeroManager = () => {
                                     </td>
                                     <td>{slide.order}</td>
                                     <td>
-                                        <button className="delete-btn" onClick={() => handleDelete(slide._id)}>Delete</button>
+                                        <button className="delete-btn" onClick={() => handleDelete(slide._id)} disabled={submitting}>
+                                            {submitting ? '...' : 'Delete'}
+                                        </button>
                                     </td>
                                 </tr>
                             ))}

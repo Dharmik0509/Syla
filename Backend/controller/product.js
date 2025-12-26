@@ -5,28 +5,34 @@ export default class ProductController {
     // Create Product
     async createProduct(req, res) {
         try {
-            const { title, price, category, stockQuantity, sku, description } = req.body;
+            const { title, price, category, stockQuantity, description, isNewArrival } = req.body;
+
+            // Validate
+            if (!title || !price || !category) {
+                return res.status(400).json({ message: "Title, price, and category are required." });
+            }
+
             const slug = title.toLowerCase().replace(/ /g, '-') + '-' + Date.now();
 
             // Handle multiple images
-            let images = [];
+            let imageUrls = [];
             if (req.files && req.files.length > 0) {
-                images = req.files.map(file => file.path);
+                imageUrls = req.files.map(file => file.path);
             } else if (req.body.images) {
                 // Fallback if strings passed (e.g. from existing URL or comma separated string)
-                images = typeof req.body.images === 'string' ? req.body.images.split(',') : req.body.images;
+                imageUrls = typeof req.body.images === 'string' ? req.body.images.split(',') : req.body.images;
             }
 
             const newProduct = new Product({
+                ...req.body,
                 title,
                 slug,
                 price,
                 category,
-                stockQuantity,
-                sku,
+                stockQuantity: stockQuantity || 0,
                 description,
-                images,
-                ...req.body
+                isNewArrival: isNewArrival === 'true' || isNewArrival === true, // Handle string/boolean
+                images: imageUrls
             });
 
             await newProduct.save();
@@ -35,6 +41,7 @@ export default class ProductController {
             if (req.files && req.files.length > 0) {
                 for (const file of req.files) await deleteFromCloudinary(file.path);
             }
+            console.error("Error creating product:", error); // Log full error to terminal
             return res.status(500).json({ message: "Error creating product", error: error.message });
         }
     }
@@ -42,7 +49,7 @@ export default class ProductController {
     // Get All Products (with filters)
     async getProducts(req, res) {
         try {
-            const { category, search } = req.body; // Changed from req.query to req.body
+            const { category, search } = req.body || {}; // Handle undefined body
             let query = { isActive: true };
 
             if (category) {
@@ -76,10 +83,13 @@ export default class ProductController {
     // Update Product
     async updateProduct(req, res) {
         try {
-            const { id } = req.body; // Changed from req.params
+            const { id, description, isNewArrival } = req.body; // Changed from req.params
             if (!id) return res.status(400).json({ message: "Product ID is required" });
 
             const updateData = { ...req.body };
+
+            // Ensure SKU is never part of the update
+            if (updateData.sku) delete updateData.sku;
 
             // Handle new images if uploaded
             if (req.files && req.files.length > 0) {
@@ -99,6 +109,9 @@ export default class ProductController {
                 const product = await Product.findById(id);
                 updateData.images = [...(product.images || []), ...newImages];
             }
+
+            if (description) updateData.description = description;
+            if (isNewArrival !== undefined) updateData.isNewArrival = isNewArrival === 'true' || isNewArrival === true;
 
             const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true });
             return res.json({ message: "Product updated", product: updatedProduct });

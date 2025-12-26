@@ -23,6 +23,7 @@ const Footer = () => {
                         <li><Link to="/pages/craft-heritage">Craft & Heritage</Link></li>
                         <li><Link to="/pages/careers">Careers</Link></li>
                         <li><Link to="/contact">Contact Us</Link></li>
+                        <li><Link to="/giveaway" style={{ color: '#d4af37', fontWeight: 'bold' }}>Participate in Giveaway</Link></li>
                     </ul>
                 </div>
 
