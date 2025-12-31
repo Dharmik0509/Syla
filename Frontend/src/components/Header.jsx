@@ -162,7 +162,7 @@ const Header = ({ isAnnouncementVisible }) => {
                       <Link to="/contact" onClick={toggleSidebar}>CONTACT</Link>
                     </li>
                     <li style={{ transitionDelay: getDelay(1) }}>
-                      <Link to="/about" onClick={toggleSidebar}>ABOUT US</Link>
+                      <Link to="/about" onClick={toggleSidebar}>WHO WE ARE</Link>
                     </li>
                   </>
                 );
