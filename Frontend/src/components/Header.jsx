@@ -149,9 +149,6 @@ const Header = ({ isAnnouncementVisible }) => {
                     <li style={{ transitionDelay: getDelay(0) }}>
                       <Link to="/" onClick={toggleSidebar}>HOME</Link>
                     </li>
-                    <li style={{ transitionDelay: getDelay(1) }}>
-                      <Link to="/about" onClick={toggleSidebar}>ABOUT US</Link>
-                    </li>
                     {menuItemsToDisplay.map((item, index) => (
                       <li key={item.name}
                         style={{ transitionDelay: getDelay(index + 2) }}
@@ -163,6 +160,9 @@ const Header = ({ isAnnouncementVisible }) => {
                     ))}
                     <li style={{ transitionDelay: getDelay(totalItems - 1) }}>
                       <Link to="/contact" onClick={toggleSidebar}>CONTACT</Link>
+                    </li>
+                    <li style={{ transitionDelay: getDelay(1) }}>
+                      <Link to="/about" onClick={toggleSidebar}>ABOUT US</Link>
                     </li>
                   </>
                 );
