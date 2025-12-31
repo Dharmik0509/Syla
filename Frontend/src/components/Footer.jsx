@@ -8,12 +8,12 @@ const Footer = () => {
             <div className="container footer-content">
                 <div className="footer-section">
                     <h4>VISIT US</h4>
-                    <p>Ground Floor, Nishat Bagh,</p>
-                    <p>Rathyatra, Varanasi 221010</p>
-                    <p>India</p>
+                    <p>Trivedi House,Chandralok Society</p>
+                    <p>Opp Mahendra Shah Hospital,</p>
+                    <p>Bhalej Road, Anand - 388001,(Guj)</p>
                     <br />
-                    <p><a href="tel:+919876543210">+91 98765 43210</a></p>
-                    <p><a href="mailto:customercare@Syla.com">customercare@Syla.com</a></p>
+                    <p><a href="tel:+919274720033">+91 92747 20033</a></p>
+                    <p><a href="mailto:sylalife@gmail.com">sylalife@gmail.com</a></p>
                 </div>
 
                 <div className="footer-section">
