@@ -91,4 +91,60 @@
         margin-left: auto;
         margin-right: auto;
     }
+    
+    .values-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+}
+
+/* --- New About Page Styles --- */
+.values-section {
+    margin-top: 4rem;
+}
+
+.section-title {
+    font-family: 'Cinzel', serif;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--color-text-primary);
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.value-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.value-desc {
+    text-align: justify;
+    line-height: 1.6;
+    color: rgba(83, 62, 45, 0.9);
+}
+
+.mission-vision-section {
+    margin-top: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.mission-text {
+    text-align: justify;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: rgba(83, 62, 45, 0.9);
 }
