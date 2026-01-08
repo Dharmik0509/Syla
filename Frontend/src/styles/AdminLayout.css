@@ -165,15 +165,23 @@
         margin-left: 0;
     }
 
-    /* Overlay when sidebar is open */
-    .admin-sidebar.open::before {
-        content: '';
+    /* Proper Overlay for Mobile */
+    .admin-sidebar-overlay {
         position: fixed;
         top: 0;
-        left: 250px;
+        left: 0;
         right: 0;
         bottom: 0;
         background: rgba(0, 0, 0, 0.5);
-        z-index: -1;
+        z-index: 900;
+        /* Below sidebar (1000) */
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .admin-sidebar-overlay.open {
+        opacity: 1;
+        visibility: visible;
     }
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import '../../styles/ProductManager.css';
+import '../../styles/AdminCommon.css'; // Updated to shared styles
 import API_HOST from '../../config';
 import { useAdminUI } from '../../context/AdminUIContext';
 
@@ -182,27 +182,28 @@ const ProductManager = () => {
 
     return (
         <AdminLayout>
-            <div className="product-manager">
-                <div className="pm-header">
-                    <h2>Product Manager</h2>
-                    <div style={{ display: 'flex', gap: '10px' }}>
+            <div className="admin-container">
+                <div className="admin-page-header">
+                    <div>
+                        <h2 className="admin-title">Product Manager</h2>
+                        <p className="admin-subtitle">Manage your inventory and store listings</p>
+                    </div>
+                    <div style={{ display: 'flex', gap: '15px' }}>
                         <select
                             value={filterCategory}
                             onChange={(e) => setFilterCategory(e.target.value)}
-                            style={{
-                                padding: '8px',
-                                borderRadius: '4px',
-                                border: '1px solid #ddd',
-                                outline: 'none',
-                                cursor: 'pointer'
-                            }}
+                            className="admin-select"
+                            style={{ width: '200px' }}
                         >
                             <option value="">All Categories</option>
                             {categories.map(cat => (
                                 <option key={cat._id} value={cat._id}>{cat.name}</option>
                             ))}
                         </select>
-                        <button className="add-btn" onClick={() => showForm ? handleCancel() : setShowForm(true)}>
+                        <button
+                            className={`admin-btn ${showForm ? 'admin-btn-secondary' : 'admin-btn-primary'}`}
+                            onClick={() => showForm ? handleCancel() : setShowForm(true)}
+                        >
                             {showForm ? 'Cancel' : '+ Add Product'}
                         </button>
                     </div>
@@ -210,120 +211,195 @@ const ProductManager = () => {
 
 
                 {showForm && (
-                    <div className="product-form-container">
-                        <form onSubmit={handleSubmit} className="product-form">
-                            <div className="form-row">
-                                <input placeholder="Title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required />
-                                <input type="number" min="0" placeholder="Price" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} required />
+                    <div className="admin-card">
+                        <h3 style={{ marginBottom: '20px', color: '#1A4D33' }}>
+                            {editMode ? 'Edit Product' : 'Add New Product'}
+                        </h3>
+                        <form onSubmit={handleSubmit}>
+                            <div className="admin-row">
+                                <div className="admin-col">
+                                    <label className="admin-label">Product Title</label>
+                                    <input
+                                        className="admin-input"
+                                        placeholder="e.g. Silk Scarf"
+                                        value={formData.title}
+                                        onChange={e => setFormData({ ...formData, title: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="admin-col">
+                                    <label className="admin-label">Price (₹)</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        className="admin-input"
+                                        placeholder="0.00"
+                                        value={formData.price}
+                                        onChange={e => setFormData({ ...formData, price: e.target.value })}
+                                        required
+                                    />
+                                </div>
                             </div>
-                            <div className="form-row">
-                                <input type="number" min="0" placeholder="Stock" value={formData.stockQuantity} onChange={e => setFormData({ ...formData, stockQuantity: e.target.value })} required />
-                                <select value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} required>
-                                    <option value="">Select Category</option>
-                                    {categories.map(cat => (
-                                        <option key={cat._id} value={cat._id}>{cat.name}</option>
-                                    ))}
-                                </select>
+
+                            <div className="admin-row">
+                                <div className="admin-col">
+                                    <label className="admin-label">Stock Quantity</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        className="admin-input"
+                                        value={formData.stockQuantity}
+                                        onChange={e => setFormData({ ...formData, stockQuantity: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="admin-col">
+                                    <label className="admin-label">Category</label>
+                                    <select
+                                        className="admin-select"
+                                        value={formData.category}
+                                        onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                        required
+                                    >
+                                        <option value="">Select Category</option>
+                                        {categories.map(cat => (
+                                            <option key={cat._id} value={cat._id}>{cat.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
-                            <textarea placeholder="Description" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })}></textarea>
+
+                            <div className="admin-form-group">
+                                <label className="admin-label">Description</label>
+                                <textarea
+                                    className="admin-textarea"
+                                    rows="4"
+                                    placeholder="Enter product description..."
+                                    value={formData.description}
+                                    onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                ></textarea>
+                            </div>
 
                             {/* File Input for Images */}
-                            <div className="form-row" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                                <label style={{ color: '#fff', marginBottom: '5px' }}>Images ({selectedImages.length} selected):</label>
-                                <input
-                                    type="file"
-                                    multiple
-                                    accept="image/*,video/*"
-                                    onChange={handleFileChange}
-                                    style={{ marginBottom: '10px' }}
-                                />
+                            <div className="admin-form-group">
+                                <label className="admin-label">Product Images ({selectedImages.length} selected)</label>
+                                <div style={{ border: '2px dashed #eaeaea', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
+                                    <input
+                                        type="file"
+                                        multiple
+                                        accept="image/*,video/*"
+                                        onChange={handleFileChange}
+                                        style={{ marginBottom: '10px' }}
+                                    />
 
-                                {/* Selected Images Preview List */}
-                                {selectedImages.length > 0 && (
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                                        {selectedImages.map((file, index) => (
-                                            <div key={index} style={{ position: 'relative', width: '80px', height: '80px' }}>
-                                                <img
-                                                    src={URL.createObjectURL(file)}
-                                                    alt="preview"
-                                                    onClick={() => setViewingImage(file)}
-                                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px', cursor: 'zoom-in' }}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeImage(index)}
-                                                    style={{
-                                                        position: 'absolute', top: '-5px', right: '-5px',
-                                                        background: 'red', color: 'white', border: 'none',
-                                                        borderRadius: '50%', width: '20px', height: '20px',
-                                                        cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                                    }}
-                                                >
-                                                    ×
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
+                                    {/* Selected Images Preview List */}
+                                    {selectedImages.length > 0 && (
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '15px', justifyContent: 'center' }}>
+                                            {selectedImages.map((file, index) => (
+                                                <div key={index} style={{ position: 'relative', width: '80px', height: '80px' }}>
+                                                    <img
+                                                        src={URL.createObjectURL(file)}
+                                                        alt="preview"
+                                                        onClick={() => setViewingImage(file)}
+                                                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px', cursor: 'zoom-in', border: '1px solid #ddd' }}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeImage(index)}
+                                                        style={{
+                                                            position: 'absolute', top: '-8px', right: '-8px',
+                                                            background: '#ef4444', color: 'white', border: 'none',
+                                                            borderRadius: '50%', width: '22px', height: '22px',
+                                                            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                                        }}
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
-                            <div className="form-row" style={{ alignItems: 'center' }}>
+                            <div className="admin-form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <input
                                     type="checkbox"
                                     id="isNewArrival"
                                     checked={formData.isNewArrival}
                                     onChange={e => setFormData({ ...formData, isNewArrival: e.target.checked })}
-                                    style={{ width: '20px', height: '20px', margin: 0 }}
+                                    style={{ width: '20px', height: '20px', accentColor: '#1A4D33' }}
                                 />
-                                <label htmlFor="isNewArrival" style={{ margin: 0, fontWeight: 'bold' }}>Mark as New Arrival</label>
+                                <label htmlFor="isNewArrival" style={{ margin: 0, fontWeight: '500', cursor: 'pointer' }}>Mark as New Arrival</label>
                             </div>
 
-                            <button type="submit" className="save-btn" disabled={submitting}>
-                                {submitting ? 'Saving...' : (editMode ? 'Update Product' : 'Save Product')}
-                            </button>
+                            <div style={{ display: 'flex', gap: '15px', marginTop: '20px' }}>
+                                <button type="submit" className="admin-btn admin-btn-primary" disabled={submitting}>
+                                    {submitting ? 'Saving...' : (editMode ? 'Update Product' : 'Save Product')}
+                                </button>
+                                {editMode && (
+                                    <button type="button" onClick={handleCancel} className="admin-btn admin-btn-secondary">
+                                        Cancel Edit
+                                    </button>
+                                )}
+                            </div>
                         </form>
                     </div>
                 )}
 
-                <div className="products-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Image</th>
-                                <th>Title</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                <th>Category</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {products.filter(p => !filterCategory || p.category?._id === filterCategory).map(product => (
-                                <tr key={product._id}>
-                                    <td><img src={product.images?.[0] || 'placeholder.jpg'} alt="" className="table-img" /></td>
-                                    <td>{product.title}</td>
-                                    <td>₹{product.price}</td>
-                                    <td style={{ color: product.stockQuantity < 5 ? 'red' : 'inherit' }}>{product.stockQuantity}</td>
-                                    <td>{product.category?.name || 'Uncategorized'}</td>
-                                    <td>
-                                        <button className="edit-btn" onClick={() => handleEdit(product)} style={{ marginRight: '5px' }}>Edit</button>
-                                        <button className="delete-btn" onClick={() => handleDelete(product._id)} disabled={submitting}>
-                                            {submitting ? '...' : 'Delete'}
-                                        </button>
-                                    </td>
+                <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
+                    <div className="admin-table-container" style={{ border: 'none', borderRadius: 0 }}>
+                        <table className="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Title</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Category</th>
+                                    <th>Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    {loading && <p>Loading products...</p>}
+                            </thead>
+                            <tbody>
+                                {products.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
+                                            {loading ? 'Loading products...' : 'No products found. Add one above!'}
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    products.filter(p => !filterCategory || p.category?._id === filterCategory).map(product => (
+                                        <tr key={product._id}>
+                                            <td><img src={product.images?.[0] || 'placeholder.jpg'} alt="" className="table-img" /></td>
+                                            <td style={{ fontWeight: '500' }}>{product.title}</td>
+                                            <td>₹{product.price}</td>
+                                            <td>
+                                                <span className={`status-badge ${product.stockQuantity < 5 ? 'status-danger' : 'status-success'}`}>
+                                                    {product.stockQuantity} {product.stockQuantity < 5 ? 'Low' : 'In Stock'}
+                                                </span>
+                                            </td>
+                                            <td>{product.category?.name || 'Uncategorized'}</td>
+                                            <td>
+                                                <button className="admin-btn admin-btn-secondary" onClick={() => handleEdit(product)} style={{ marginRight: '5px', padding: '6px 12px', fontSize: '0.8rem' }}>Edit</button>
+                                                <button className="admin-btn admin-btn-danger" onClick={() => handleDelete(product._id)} disabled={submitting} style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 {/* Image Preview Modal */}
                 {viewingImage && (
                     <div style={{
                         position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                        background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        zIndex: 1000
+                        background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        zIndex: 1000, backdropFilter: 'blur(5px)'
                     }} onClick={() => setViewingImage(null)}>
                         <div style={{
                             position: 'relative',
@@ -352,7 +428,7 @@ const ProductManager = () => {
                                 <img
                                     src={URL.createObjectURL(viewingImage)}
                                     alt="Full Preview"
-                                    style={{ maxWidth: '100%', maxHeight: '90vh', borderRadius: '8px', boxShadow: '0 5px 30px rgba(0,0,0,0.5)' }}
+                                    style={{ maxWidth: '100%', maxHeight: '90vh', borderRadius: '8px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}
                                 />
                             )}
                         </div>
@@ -362,5 +438,4 @@ const ProductManager = () => {
         </AdminLayout >
     );
 };
-
 export default ProductManager;

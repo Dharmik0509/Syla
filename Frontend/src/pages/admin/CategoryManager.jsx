@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import '../../styles/ProductManager.css'; // Reusing styles
+import '../../styles/AdminCommon.css'; // Shared styles
 import API_HOST from '../../config';
 import { useAdminUI } from '../../context/AdminUIContext';
 
@@ -121,42 +121,63 @@ const CategoryManager = () => {
 
     return (
         <AdminLayout>
-            <div className="product-manager">
-                <h2>Category Manager</h2>
-                <div className="product-form-container">
-                    <form onSubmit={handleSubmit} className="product-form" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <input
-                                type="text"
-                                placeholder="Category Name"
-                                value={newCategory}
-                                onChange={(e) => setNewCategory(e.target.value)}
-                                required
-                                style={{ flex: 1 }}
-                            />
-                            <select
-                                value={parentCategory}
-                                onChange={(e) => setParentCategory(e.target.value)}
-                                style={{ flex: 1 }}
-                            >
-                                <option value="">No Parent (Top Level)</option>
-                                {categories.map(cat => (
-                                    <option key={cat._id} value={cat._id}>{cat.name}</option>
-                                ))}
-                            </select>
+            <div className="admin-container">
+                <div className="admin-page-header">
+                    <div>
+                        <h2 className="admin-title">Category Manager</h2>
+                        <p className="admin-subtitle">Organize your products into categories.</p>
+                    </div>
+                </div>
+
+                <div className="admin-card">
+                    <h3 style={{ marginBottom: '20px', color: '#1A4D33' }}>
+                        {editMode ? 'Edit Category' : 'Add New Category'}
+                    </h3>
+                    <form onSubmit={handleSubmit}>
+                        <div className="admin-row">
+                            <div className="admin-col">
+                                <label className="admin-label">Category Name</label>
+                                <input
+                                    className="admin-input"
+                                    type="text"
+                                    placeholder="e.g. Sarees"
+                                    value={newCategory}
+                                    onChange={(e) => setNewCategory(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="admin-col">
+                                <label className="admin-label">Parent Category (Optional)</label>
+                                <select
+                                    className="admin-select"
+                                    value={parentCategory}
+                                    onChange={(e) => setParentCategory(e.target.value)}
+                                >
+                                    <option value="">No Parent (Top Level)</option>
+                                    {categories.map(cat => (
+                                        <option key={cat._id} value={cat._id}>{cat.name}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
-                        <input
-                            type="file"
-                            accept="image/*,video/*"
-                            onChange={(e) => setSelectedImage(e.target.files[0])}
-                            style={{ padding: '5px' }}
-                        />
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <button type="submit" className="save-btn" style={{ width: 'auto' }} disabled={submitting}>
+
+                        <div className="admin-form-group">
+                            <label className="admin-label">Category Image</label>
+                            <input
+                                type="file"
+                                accept="image/*,video/*"
+                                onChange={(e) => setSelectedImage(e.target.files[0])}
+                                className="admin-input"
+                                style={{ padding: '10px' }}
+                            />
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '15px' }}>
+                            <button type="submit" className="admin-btn admin-btn-primary" disabled={submitting}>
                                 {submitting ? 'Saving...' : (editMode ? 'Update Category' : 'Add Category')}
                             </button>
                             {editMode && (
-                                <button type="button" onClick={handleCancelEdit} style={{ padding: '10px', background: '#555', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                                <button type="button" onClick={handleCancelEdit} className="admin-btn admin-btn-secondary">
                                     Cancel
                                 </button>
                             )}
@@ -164,46 +185,55 @@ const CategoryManager = () => {
                     </form>
                 </div>
 
-                <div className="products-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Image</th>
-                                <th>Name</th>
-                                <th>Parent</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {categories.map(cat => (
-                                <tr key={cat._id}>
-                                    <td>
-                                        {cat.image ? (
-                                            cat.image.match(/\.(mp4|mov|avi|mkv)$/i) ? (
-                                                <video src={cat.image} style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
-                                            ) : (
-                                                <img src={cat.image} alt={cat.name} style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
-                                            )
-                                        ) : (
-                                            <span style={{ color: '#ccc' }}>No Img</span>
-                                        )}
-                                    </td>
-                                    <td>{cat.name}</td>
-                                    <td>{cat.parentCategory?.name || '-'}</td>
-                                    <td>
-                                        <button className="edit-btn" onClick={() => handleEdit(cat)} style={{ marginRight: '5px', padding: '5px 10px', cursor: 'pointer' }}>Edit</button>
-                                        <button className="delete-btn" onClick={() => handleDelete(cat._id)} disabled={submitting}>
-                                            {submitting ? '...' : 'Delete'}
-                                        </button>
-                                    </td>
+                <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
+                    <div className="admin-table-container" style={{ border: 'none', borderRadius: 0 }}>
+                        <table className="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Parent</th>
+                                    <th>Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {categories.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="4" style={{ textAlign: 'center', padding: '30px', color: '#888' }}>
+                                            No categories found.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    categories.map(cat => (
+                                        <tr key={cat._id}>
+                                            <td>
+                                                {cat.image ? (
+                                                    cat.image.match(/\.(mp4|mov|avi|mkv)$/i) ? (
+                                                        <video src={cat.image} className="table-img" />
+                                                    ) : (
+                                                        <img src={cat.image} alt={cat.name} className="table-img" />
+                                                    )
+                                                ) : (
+                                                    <span style={{ color: '#ccc', fontStyle: 'italic' }}>No Img</span>
+                                                )}
+                                            </td>
+                                            <td style={{ fontWeight: '500' }}>{cat.name}</td>
+                                            <td>{cat.parentCategory?.name || <span style={{ color: '#999' }}>-</span>}</td>
+                                            <td>
+                                                <button className="admin-btn admin-btn-secondary" onClick={() => handleEdit(cat)} style={{ marginRight: '5px', padding: '6px 12px', fontSize: '0.8rem' }}>Edit</button>
+                                                <button className="admin-btn admin-btn-danger" onClick={() => handleDelete(cat._id)} disabled={submitting} style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </AdminLayout>
     );
 };
-
 export default CategoryManager;

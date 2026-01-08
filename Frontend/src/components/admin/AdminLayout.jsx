@@ -26,6 +26,10 @@ const AdminLayout = ({ children }) => {
 
     return (
         <div className="admin-layout">
+            <div
+                className={`admin-sidebar-overlay ${isSidebarOpen ? 'open' : ''}`}
+                onClick={() => setIsSidebarOpen(false)}
+            ></div>
             <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
                 <div className="admin-logo">
                     <h2>SYLA ADMIN</h2>
