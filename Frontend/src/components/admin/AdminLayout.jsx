@@ -6,7 +6,7 @@ import '../../styles/AdminLayout.css';
 const AdminLayout = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth > 768);
 
     const handleLogout = () => {
         localStorage.removeItem('adminToken');
@@ -16,12 +16,12 @@ const AdminLayout = ({ children }) => {
 
     const menuItems = [
         { label: 'Dashboard', path: '/admin/dashboard', icon: <FiGrid /> },
-        { label: 'Products', path: '/admin/products', icon: <FiBox /> },
         { label: 'Categories', path: '/admin/categories', icon: <FiList /> },
+        { label: 'Products', path: '/admin/products', icon: <FiBox /> },
         { label: 'Discounts', path: '/admin/discounts', icon: <FiTag /> },
         { label: 'Announcements', path: '/admin/announcements', icon: <FiBell /> },
         { label: 'Hero Image', path: '/admin/hero', icon: <FiImage /> },
-        { label: 'Giveaways', path: '/admin/giveaway', icon: <FiGift /> },
+        { label: 'Unlock Giveaway', path: '/admin/giveaway', icon: <FiGift /> },
     ];
 
     return (
@@ -38,7 +38,12 @@ const AdminLayout = ({ children }) => {
                     <ul>
                         {menuItems.map((item) => (
                             <li key={item.path} className={location.pathname === item.path ? 'active' : ''}>
-                                <Link to={item.path} onClick={() => window.innerWidth < 768 && setIsSidebarOpen(false)}>
+                                <Link
+                                    to={item.path}
+                                    onClick={() => {
+                                        if (window.innerWidth <= 768) setIsSidebarOpen(false);
+                                    }}
+                                >
                                     <span className="icon">{item.icon}</span>
                                     {isSidebarOpen && <span className="label">{item.label}</span>}
                                 </Link>

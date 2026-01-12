@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=Jost:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Raleway:wght@300;400;500;600;700&display=swap');
 
 :root {
   /* Colors */
@@ -13,9 +13,9 @@
   --color-button-text: #000;
 
   /* Fonts */
-  --font-family-heading: 'Cardo', serif;
-  --font-family-body: 'Jost', sans-serif;
-  /* Jost is a common modern sans-serif match */
+  --font-family-heading: 'Gascogne', 'Lora', serif;
+  --font-family-body: 'Raleway', sans-serif;
+  /* Gascogne/Lora for headings, Raleway for body */
 
   /* Spacing */
   --spacing-unit: 8px;

@@ -146,18 +146,24 @@
         top: 0;
         height: 100vh;
         z-index: 1000;
-        width: 0;
-        /* Hidden by default */
-        overflow: hidden;
+        width: 260px;
+        /* Fixed width for drawer */
+        transform: translateX(-100%);
+        /* Start off-screen */
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: none;
+        /* No shadow when closed/hidden */
     }
 
     .admin-sidebar.open {
-        width: 250px;
+        transform: translateX(0);
+        /* Slide in */
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
     }
 
     .admin-sidebar.closed {
-        width: 0;
+        /* On mobile, closed means off-screen, handled by default transform */
+        width: 260px;
     }
 
     .admin-main {

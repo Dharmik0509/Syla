@@ -61,127 +61,100 @@ const ProductDetails = () => {
     if (!product) return <div className="container" style={{ padding: '100px' }}>Product not found</div>;
 
     return (
-        <div className="product-details-page" style={{ paddingTop: '100px', minHeight: '80vh' }}>
-            <div className="container" style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
+        <div className="product-details-page">
+            <div className="product-details-container">
                 {/* Images Section */}
-                <div className="product-gallery" style={{ flex: '1 1 400px' }}>
-                    <div className="main-image-container" style={{ position: 'relative' }}>
+                <div className="product-gallery">
+                    <div className="main-image-container">
+                        {/* Discount Badge */}
                         {hasDiscount && (
-                            <div style={{
-                                position: 'absolute',
-                                top: '10px',
-                                right: '10px',
-                                backgroundColor: '#d9534f',
-                                color: 'white',
-                                padding: '6px 12px',
-                                borderRadius: '4px',
-                                fontSize: '1rem',
-                                fontWeight: 'bold',
-                                zIndex: 10
-                            }}>
+                            <div className="discount-badge" style={{ position: 'absolute', top: 10, right: 10, background: '#d9534f', color: 'white', padding: '5px 10px', borderRadius: 4, zIndex: 10, fontWeight: 'bold' }}>
                                 {product.discountPercentage}% OFF
                             </div>
                         )}
 
-                        {/* Left Arrow */}
-                        {product.images.length > 1 && (
-                            <button className="slider-arrow arrow-left" onClick={prevImage}>
-                                &#10094;
-                            </button>
+                        {/* Navigation Arrows */}
+                        {product.images && product.images.length > 1 && (
+                            <>
+                                <button className="slider-arrow arrow-left" onClick={prevImage}>&#10094;</button>
+                                <button className="slider-arrow arrow-right" onClick={nextImage}>&#10095;</button>
+                            </>
                         )}
 
-                        {/* Main Image with Animation Key */}
-                        {product.images[selectedImage].match(/\.(mp4|mov|avi|mkv)$/i) ? (
-                            <video
-                                key={selectedImage}
-                                src={product.images[selectedImage]}
-                                className="product-detail-image"
-                                controls
-                                autoPlay
-                                loop
-                                muted
-                            />
-                        ) : (
-                            <img
-                                key={selectedImage}
-                                src={product.images[selectedImage] || 'placeholder.jpg'}
-                                alt={product.title}
-                                className="product-detail-image"
-                            />
-                        )}
+                        {/* Main Image Logic */}
+                        {(() => {
+                            const currentSrc = product.images && product.images[selectedImage] ? product.images[selectedImage] : null;
+                            const isVideo = typeof currentSrc === 'string' && currentSrc.match(/\.(mp4|mov|avi|mkv)$/i);
 
-                        {/* Right Arrow */}
-                        {product.images.length > 1 && (
-                            <button className="slider-arrow arrow-right" onClick={nextImage}>
-                                &#10095;
-                            </button>
-                        )}
+                            if (!currentSrc) {
+                                return <img src="https://via.placeholder.com/600x800?text=No+Image" alt="No image" className="product-detail-image" />;
+                            }
+
+                            if (isVideo) {
+                                return <video key={selectedImage} src={currentSrc} className="product-detail-image" controls autoPlay loop muted />;
+                            }
+
+                            return (
+                                <img
+                                    key={selectedImage}
+                                    src={currentSrc}
+                                    alt={product.title}
+                                    className="product-detail-image"
+                                    onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/600x800?text=Image+Error'; }}
+                                />
+                            );
+                        })()}
                     </div>
-                    <div className="thumbnail-list" style={{ display: 'flex', gap: '10px' }}>
-                        {product.images.map((img, idx) => (
 
-                            <img
-                                key={idx}
-                                src={img}
-                                alt={`Thumbnail ${idx}`}
-                                onClick={() => setSelectedImage(idx)}
-                                className="thumbnail-img"
-                                style={{
-                                    width: '80px',
-                                    height: '80px',
-                                    objectFit: 'cover',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    border: selectedImage === idx ? '2px solid #0F2B1D' : '2px solid transparent',
-                                    opacity: selectedImage === idx ? 1 : 0.6
-                                }}
-                            />
-                        ))}
-                    </div>
+                    {/* Thumbnails */}
+                    {product.images && product.images.length > 1 && (
+                        <div className="thumbnail-list">
+                            {product.images.map((img, idx) => (
+                                <img
+                                    key={idx}
+                                    src={img}
+                                    alt={`Thumb ${idx}`}
+                                    onClick={() => setSelectedImage(idx)}
+                                    className={`thumbnail-img ${selectedImage === idx ? 'active' : ''}`}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Info Section */}
-                <div className="product-info" style={{ flex: '1 1 400px' }}>
-                    <h1 style={{ fontFamily: 'Cinzel, serif', fontSize: '2.5rem', marginBottom: '10px' }}>{product.title}</h1>
+                <div className="product-info-section">
+                    <h1 className="product-title">{product.title}</h1>
 
-                    <div style={{ marginBottom: '20px' }}>
+                    {product.sku && <div className="product-sku">SKU: {product.sku}</div>}
+
+                    <div className="product-price-container">
                         {hasDiscount ? (
-                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '15px' }}>
-                                <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '1.2rem' }}>₹{product.price}</span>
-                                <span style={{ fontSize: '2rem', color: '#d9534f', fontWeight: 'bold' }}>₹{discountedPrice}</span>
+                            <div>
+                                <span className="original-price">₹{product.price}</span>
+                                <span className="product-price discounted-price">₹{discountedPrice}</span>
                             </div>
                         ) : (
-                            <p style={{ fontSize: '1.5rem', color: '#0F2B1D', fontWeight: 'bold' }}>₹{product.price}</p>
+                            <span className="product-price">₹{product.price}</span>
                         )}
                     </div>
 
-                    <div className="product-description" style={{ marginBottom: '30px', color: '#555', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
+                    <div className="product-description">
                         <p>{product.description}</p>
                     </div>
 
-                    <div className="stock-status" style={{ marginBottom: '20px' }}>
-                        {product.stockQuantity > 0 ? (
-                            <span style={{ color: 'green' }}>In Stock</span>
-                        ) : (
-                            <span style={{ color: 'red' }}>Out of Stock</span>
-                        )}
+                    <div className="stock-status">
+                        Status: {product.stockQuantity > 0 ? <span className="in-stock">In Stock</span> : <span className="out-of-stock">Out of Stock</span>}
                     </div>
 
-                    <button
-                        onClick={handleWhatsAppOrder}
-                        className="primary-btn"
-                        style={{
-                            width: '100%',
-                            backgroundColor: '#25D366',
-                            borderColor: '#25D366',
-                            fontSize: '1.1rem'
-                        }}
-                    >
-                        Order via WhatsApp
+                    <button onClick={handleWhatsAppOrder} className="whatsapp-btn">
+                        <span>Order via WhatsApp</span>
                     </button>
-                    <p style={{ marginTop: '10px', fontSize: '0.9rem', color: '#777', display: 'none' }}>
-                        SKU: {product.sku}
-                    </p>
+
+                    <div style={{ marginTop: '2rem', display: 'flex', gap: '20px', fontSize: '0.9rem', color: '#666' }}>
+                        <div>✓ Authentic Quality</div>
+                        <div>✓ Fast Shipping</div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -129,7 +129,7 @@ const Header = ({ isAnnouncementVisible }) => {
           <div className="sidebar-content">
             <ul className="sidebar-links">
               {(() => {
-                const totalItems = 2 + menuItemsToDisplay.length + 1; // Home, About, Categories, Contact
+                const totalItems = 2 + menuItemsToDisplay.length + 2; // Home, Items, Contact, About, Giveaway
 
                 // Helper to get delay based on direction
                 // OPEN (isSidebarOpen=true): Bottom -> Top (Reverse Index)
@@ -151,18 +151,21 @@ const Header = ({ isAnnouncementVisible }) => {
                     </li>
                     {menuItemsToDisplay.map((item, index) => (
                       <li key={item.name}
-                        style={{ transitionDelay: getDelay(index + 2) }}
+                        style={{ transitionDelay: getDelay(index + 1) }}
                         onMouseEnter={() => setActiveImage(item.image)}
                         onClick={() => setActiveImage(item.image)}
                       >
                         <span onClick={() => handleNavigation(item.path)} style={{ cursor: 'pointer' }}>{item.name}</span>
                       </li>
                     ))}
-                    <li style={{ transitionDelay: getDelay(totalItems - 1) }}>
+                    <li style={{ transitionDelay: getDelay(totalItems - 3) }}>
                       <Link to="/contact" onClick={toggleSidebar}>CONTACT</Link>
                     </li>
-                    <li style={{ transitionDelay: getDelay(1) }}>
+                    <li style={{ transitionDelay: getDelay(totalItems - 2) }}>
                       <Link to="/about" onClick={toggleSidebar}>WHO WE ARE</Link>
+                    </li>
+                    <li style={{ transitionDelay: getDelay(totalItems - 1) }}>
+                      <Link to="/giveaway" onClick={toggleSidebar} className="giveaway-link">UNLOCK GIVEAWAY</Link>
                     </li>
                   </>
                 );

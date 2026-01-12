@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Footer.css';
+import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa';
 
 const Footer = () => {
     return (
@@ -23,7 +24,6 @@ const Footer = () => {
                         <li><Link to="/pages/craft-heritage">Craft & Heritage</Link></li>
                         <li><Link to="/pages/careers">Careers</Link></li>
                         <li><Link to="/contact">Contact Us</Link></li>
-                        <li><Link to="/giveaway" style={{ color: '#d4af37', fontWeight: 'bold' }}>Unlock the Giveaway</Link></li>
                     </ul>
                 </div>
 
@@ -45,9 +45,9 @@ const Footer = () => {
                         <button type="submit">→</button>
                     </form>
                     <div className="social-links">
-                        <Link to="#">FB</Link>
-                        <Link to="#">IG</Link>
-                        <Link to="#">YT</Link>
+                        <a href="https://www.facebook.com/share/1CRrJ9W1MT/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><FaFacebookF /></a>
+                        <a href="https://www.instagram.com/syla.india?igsh=aWYwOGlwbW85MGRv" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><FaInstagram /></a>
+                        <Link to="#" aria-label="YouTube"><FaYoutube /></Link>
                     </div>
                 </div>
             </div>

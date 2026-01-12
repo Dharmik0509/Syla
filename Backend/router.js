@@ -45,6 +45,11 @@ router.post("/get-product-by-id", productController.getProductById);
 router.post("/update-product", verifyToken, upload.array('images', 5), productController.updateProduct);
 router.post("/delete-product", verifyToken, productController.deleteProduct);
 
+// Bulk Product Operations
+router.post("/bulk-create-products", verifyToken, upload.array('images', 50), productController.bulkCreateProducts);
+router.post("/bulk-delete-products", verifyToken, productController.bulkDeleteProducts);
+router.post("/bulk-update-products", verifyToken, productController.bulkUpdateProducts);
+
 // Hero Section Routes (Protected actions, Public read)
 router.post("/create-hero-slide", verifyToken, upload.single('image'), heroController.createSlide);
 router.post("/get-hero-slides", heroController.getSlides);

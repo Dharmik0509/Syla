@@ -19,25 +19,30 @@ const ProductManager = () => {
 
     // Form State
     const [formData, setFormData] = useState({
-        title: '',
-        price: '',
-        stockQuantity: '',
-        discountPercentage: '0',
-        category: '',
-        description: '',
-        isNewArrival: false
+        title: '', price: '', stockQuantity: '', discountPercentage: '0',
+        category: '', description: '', isNewArrival: false
     });
-    const [selectedImages, setSelectedImages] = useState([]); // Stores Array of Files
+    const [selectedImages, setSelectedImages] = useState([]);
 
-    const handleFileChange = (e) => {
-        const files = Array.from(e.target.files);
-        // Append new files to existing ones
-        setSelectedImages(prev => [...prev, ...files]);
-    };
+    // --- BULK OPERATIONS STATE ---
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [showBulkAdd, setShowBulkAdd] = useState(false);
 
-    const removeImage = (index) => {
-        setSelectedImages(prev => prev.filter((_, i) => i !== index));
-    };
+    // Batch Mode State (List of 10 slots)
+    const [batchItems, setBatchItems] = useState([]);
+    const [bulkFormData, setBulkFormData] = useState({
+        category: '', price: '', stockQuantity: '',
+        description: '', isNewArrival: false, titlePrefix: ''
+    });
+
+    // Initialize Batch Items when Bulk Mode opens
+    useEffect(() => {
+        if (showBulkAdd) {
+            setBatchItems(Array(10).fill(null).map(() => ({
+                title: '', price: '', stockQuantity: '1', category: '', description: '', images: [], isNewArrival: false
+            })));
+        }
+    }, [showBulkAdd]);
 
     useEffect(() => {
         fetchProducts();
@@ -64,12 +69,150 @@ const ProductManager = () => {
             const response = await fetch(`${API_HOST}/api/get-categories`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
-            }); // Public read
+            });
             const data = await response.json();
             setCategories(data);
         } catch (error) {
             console.error("Error fetching categories:", error);
         }
+    };
+
+    // --- BULK HANDLERS ---
+    const toggleSelectAll = (e) => {
+        if (e.target.checked) {
+            const visibleProducts = products.filter(p => !filterCategory || p.category?._id === filterCategory);
+            setSelectedIds(visibleProducts.map(p => p._id));
+        } else {
+            setSelectedIds([]);
+        }
+    };
+
+    const toggleSelectOne = (id) => {
+        setSelectedIds(prev =>
+            prev.includes(id) ? prev.filter(pid => pid !== id) : [...prev, id]
+        );
+    };
+
+    const handleBulkDelete = () => {
+        confirmAction(`Are you sure you want to delete ${selectedIds.length} products?`, async () => {
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch(`${API_HOST}/api/bulk-delete-products`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': token },
+                    body: JSON.stringify({ ids: selectedIds })
+                });
+
+                if (response.ok) {
+                    showToast(`Successfully deleted ${selectedIds.length} products`, 'success');
+                    setSelectedIds([]);
+                    fetchProducts();
+                } else {
+                    showToast('Bulk delete failed', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                showToast('Error performing bulk delete', 'error');
+            }
+        });
+    };
+
+    const handleBatchChange = (index, field, value) => {
+        const newItems = [...batchItems];
+        newItems[index] = { ...newItems[index], [field]: value };
+        setBatchItems(newItems);
+    };
+
+    const handleBatchImageChange = (index, e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 5) {
+            showToast("Maximum 5 images allowed per product", "error");
+            handleBatchChange(index, 'images', files.slice(0, 5));
+        } else {
+            handleBatchChange(index, 'images', files);
+        }
+    };
+
+    const handleBatchSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+
+        if (!bulkFormData.category) {
+            showToast("Please select a Category for the batch", "error");
+            setSubmitting(false);
+            return;
+        }
+
+        const validItems = batchItems.filter(item => item.title && item.price);
+
+        if (validItems.length === 0) {
+            showToast("Please fill in at least one product row (Title & Price)", "error");
+            setSubmitting(false);
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('adminToken');
+            const data = new FormData();
+
+            let fileCounter = 0;
+            const finalProducts = validItems.map(item => {
+                let itemIndices = [];
+                if (item.images && item.images.length > 0) {
+                    item.images.forEach(file => {
+                        data.append('images', file);
+                        itemIndices.push(fileCounter);
+                        fileCounter++;
+                    });
+                }
+                return {
+                    title: item.title,
+                    price: item.price,
+                    stockQuantity: item.stockQuantity,
+                    category: bulkFormData.category,
+                    description: item.description,
+                    isNewArrival: item.isNewArrival,
+                    imageIndices: itemIndices
+                };
+            });
+
+            data.append('products', JSON.stringify(finalProducts));
+
+            const response = await fetch(`${API_HOST}/api/bulk-create-products`, {
+                method: 'POST',
+                headers: { 'Authorization': token },
+                body: data
+            });
+
+            if (response.ok) {
+                const resData = await response.json();
+                if (resData.warning) {
+                    showToast(resData.warning, 'error'); // Show as error for visibility
+                } else {
+                    showToast(resData.message, 'success');
+                }
+                setShowBulkAdd(false);
+                fetchProducts();
+            } else {
+                const err = await response.json();
+                showToast(err.message || 'Batch create failed', 'error');
+            }
+        } catch (error) {
+            console.error(error);
+            showToast('Error creating products', 'error');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    // --- STANDARD HANDLERS ---
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        setSelectedImages(prev => [...prev, ...files]);
+    };
+
+    const removeImage = (index) => {
+        setSelectedImages(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleEdit = (product) => {
@@ -85,7 +228,8 @@ const ProductManager = () => {
         setCurrentId(product._id);
         setEditMode(true);
         setShowForm(true);
-        setSelectedImages([]); // Reset new files
+        setShowBulkAdd(false);
+        setSelectedImages([]);
         window.scrollTo(0, 0);
     };
 
@@ -104,7 +248,6 @@ const ProductManager = () => {
         e.preventDefault();
         setSubmitting(true);
 
-        // Validation for negative values
         if (Number(formData.price) < 0 || Number(formData.stockQuantity) < 0) {
             showToast("Price and Stock cannot be negative!", "error");
             setSubmitting(false);
@@ -113,28 +256,15 @@ const ProductManager = () => {
 
         try {
             const token = localStorage.getItem('adminToken');
-
             const data = new FormData();
-            Object.keys(formData).forEach(key => {
-                data.append(key, formData[key]);
-            });
-
-            // Append multiple images
-            selectedImages.forEach(file => {
-                data.append('images', file);
-            });
-
-            if (editMode && currentId) {
-                data.append('id', currentId);
-            }
+            Object.keys(formData).forEach(key => data.append(key, formData[key]));
+            selectedImages.forEach(file => data.append('images', file));
+            if (editMode && currentId) data.append('id', currentId);
 
             const url = editMode ? `${API_HOST}/api/update-product` : `${API_HOST}/api/create-product`;
-
             const response = await fetch(url, {
                 method: 'POST',
-                headers: {
-                    'Authorization': token
-                },
+                headers: { 'Authorization': token },
                 body: data
             });
 
@@ -145,7 +275,6 @@ const ProductManager = () => {
             } else {
                 const errorData = await response.json();
                 showToast(`Failed: ${errorData.message}`, 'error');
-                console.error("Server error:", errorData);
             }
         } catch (error) {
             console.error("Error creating product:", error);
@@ -160,10 +289,7 @@ const ProductManager = () => {
                 const token = localStorage.getItem('adminToken');
                 const response = await fetch(`${API_HOST}/api/delete-product`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': token
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': token },
                     body: JSON.stringify({ id })
                 });
 
@@ -180,6 +306,9 @@ const ProductManager = () => {
         });
     };
 
+    const visibleProducts = products.filter(p => !filterCategory || p.category?._id === filterCategory);
+    const allSelected = visibleProducts.length > 0 && selectedIds.length === visibleProducts.length;
+
     return (
         <AdminLayout>
             <div className="admin-container">
@@ -188,7 +317,12 @@ const ProductManager = () => {
                         <h2 className="admin-title">Product Manager</h2>
                         <p className="admin-subtitle">Manage your inventory and store listings</p>
                     </div>
-                    <div style={{ display: 'flex', gap: '15px' }}>
+                    <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                        {selectedIds.length > 0 && (
+                            <button className="admin-btn admin-btn-danger" onClick={handleBulkDelete}>
+                                Delete ({selectedIds.length})
+                            </button>
+                        )}
                         <select
                             value={filterCategory}
                             onChange={(e) => setFilterCategory(e.target.value)}
@@ -201,149 +335,179 @@ const ProductManager = () => {
                             ))}
                         </select>
                         <button
-                            className={`admin-btn ${showForm ? 'admin-btn-secondary' : 'admin-btn-primary'}`}
-                            onClick={() => showForm ? handleCancel() : setShowForm(true)}
+                            className={`admin-btn ${showBulkAdd ? 'admin-btn-secondary' : 'admin-btn-primary'}`}
+                            onClick={() => {
+                                setShowBulkAdd(!showBulkAdd);
+                                setShowForm(false);
+                            }}
                         >
-                            {showForm ? 'Cancel' : '+ Add Product'}
+                            {showBulkAdd ? 'Cancel Bulk' : '+ Bulk Add'}
+                        </button>
+                        <button
+                            className={`admin-btn ${showForm ? 'admin-btn-secondary' : 'admin-btn-primary'}`}
+                            onClick={() => {
+                                setShowForm(!showForm);
+                                setShowBulkAdd(false); // Close bulk if open
+                                if (showForm) handleCancel();
+                            }}
+                        >
+                            {showForm ? 'Cancel' : '+ Add Single'}
                         </button>
                     </div>
                 </div>
+
+                {/* BATCH ADD GRID */}
+                {showBulkAdd && (
+                    <div className="admin-card" style={{ border: '1px solid #c5a059', maxWidth: '100%', overflowX: 'auto' }}>
+                        <h3 style={{ marginBottom: '15px', color: '#c5a059' }}>Batch Add Products (10 Slots)</h3>
+                        <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '15px' }}>
+                            Fill in the details for up to 10 products at once. Empty rows will be ignored.
+                        </p>
+
+                        <form onSubmit={handleBatchSubmit}>
+                            <div style={{ marginBottom: '20px', padding: '15px', background: '#f5f5f5', borderRadius: '8px', border: '1px solid #ddd' }}>
+                                <label className="admin-label" style={{ marginBottom: '8px', display: 'block' }}>Select Category for this Batch</label>
+                                <select
+                                    className="admin-select"
+                                    value={bulkFormData.category}
+                                    onChange={e => setBulkFormData(prev => ({ ...prev, category: e.target.value }))}
+                                    required
+                                    style={{ maxWidth: '300px' }}
+                                >
+                                    <option value="">-- Select Category --</option>
+                                    {categories.map(cat => (<option key={cat._id} value={cat._id}>{cat.name}</option>))}
+                                </select>
+                            </div>
+
+                            <table className="admin-table" style={{ minWidth: '900px' }}>
+                                <thead>
+                                    <tr>
+                                        <th style={{ width: '60px' }}>#</th>
+                                        <th style={{ width: '100px' }}>Image</th>
+                                        <th>Title *</th>
+                                        <th style={{ width: '120px' }}>Price *</th>
+                                        <th style={{ width: '100px' }}>Stock</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {batchItems.map((item, index) => (
+                                        <tr key={index}>
+                                            <td style={{ fontWeight: 'bold', color: '#ccc' }}>{index + 1}</td>
+                                            <td>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    multiple
+                                                    onChange={e => handleBatchImageChange(index, e)}
+                                                    style={{ maxWidth: '180px' }}
+                                                />
+                                                {item.images && item.images.length > 0 && (
+                                                    <div style={{ marginTop: '5px', display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                                                        {item.images.map((file, i) => (
+                                                            <img
+                                                                key={i}
+                                                                src={URL.createObjectURL(file)}
+                                                                alt="preview"
+                                                                style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #ccc' }}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td>
+                                                <input
+                                                    className="admin-input"
+                                                    placeholder="Product Title"
+                                                    value={item.title}
+                                                    onChange={e => handleBatchChange(index, 'title', e.target.value)}
+                                                    style={{ padding: '8px' }}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="number" className="admin-input"
+                                                    placeholder="0"
+                                                    value={item.price}
+                                                    onChange={e => handleBatchChange(index, 'price', e.target.value)}
+                                                    style={{ padding: '8px' }}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="number" className="admin-input"
+                                                    value={item.stockQuantity}
+                                                    onChange={e => handleBatchChange(index, 'stockQuantity', e.target.value)}
+                                                    style={{ padding: '8px' }}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    className="admin-input"
+                                                    placeholder="Desc..."
+                                                    value={item.description}
+                                                    onChange={e => handleBatchChange(index, 'description', e.target.value)}
+                                                    style={{ padding: '8px' }}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
+                                <button type="submit" className="admin-btn admin-btn-primary" disabled={submitting}>
+                                    {submitting ? 'Creating Products...' : 'Save All Valid Products'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                )}
 
 
                 {showForm && (
                     <div className="admin-card">
                         <h3 style={{ marginBottom: '20px', color: '#1A4D33' }}>
-                            {editMode ? 'Edit Product' : 'Add New Product'}
+                            {editMode ? 'Edit Product' : 'Add Single Product'}
                         </h3>
+                        {/* Standard Form (Reused Logic) */}
                         <form onSubmit={handleSubmit}>
+                            {/* ... Standard Form Fields same as before ... */}
                             <div className="admin-row">
                                 <div className="admin-col">
                                     <label className="admin-label">Product Title</label>
-                                    <input
-                                        className="admin-input"
-                                        placeholder="e.g. Silk Scarf"
-                                        value={formData.title}
-                                        onChange={e => setFormData({ ...formData, title: e.target.value })}
-                                        required
-                                    />
+                                    <input className="admin-input" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} required />
                                 </div>
                                 <div className="admin-col">
-                                    <label className="admin-label">Price (₹)</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        className="admin-input"
-                                        placeholder="0.00"
-                                        value={formData.price}
-                                        onChange={e => setFormData({ ...formData, price: e.target.value })}
-                                        required
-                                    />
+                                    <label className="admin-label">Price</label>
+                                    <input type="number" className="admin-input" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} required />
                                 </div>
                             </div>
-
                             <div className="admin-row">
                                 <div className="admin-col">
-                                    <label className="admin-label">Stock Quantity</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        className="admin-input"
-                                        value={formData.stockQuantity}
-                                        onChange={e => setFormData({ ...formData, stockQuantity: e.target.value })}
-                                        required
-                                    />
+                                    <label className="admin-label">Stock</label>
+                                    <input type="number" className="admin-input" value={formData.stockQuantity} onChange={e => setFormData({ ...formData, stockQuantity: e.target.value })} required />
                                 </div>
                                 <div className="admin-col">
                                     <label className="admin-label">Category</label>
-                                    <select
-                                        className="admin-select"
-                                        value={formData.category}
-                                        onChange={e => setFormData({ ...formData, category: e.target.value })}
-                                        required
-                                    >
+                                    <select className="admin-select" value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} required>
                                         <option value="">Select Category</option>
-                                        {categories.map(cat => (
-                                            <option key={cat._id} value={cat._id}>{cat.name}</option>
-                                        ))}
+                                        {categories.map(cat => (<option key={cat._id} value={cat._id}>{cat.name}</option>))}
                                     </select>
                                 </div>
                             </div>
-
                             <div className="admin-form-group">
                                 <label className="admin-label">Description</label>
-                                <textarea
-                                    className="admin-textarea"
-                                    rows="4"
-                                    placeholder="Enter product description..."
-                                    value={formData.description}
-                                    onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                ></textarea>
+                                <textarea className="admin-textarea" rows="3" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })}></textarea>
                             </div>
-
-                            {/* File Input for Images */}
                             <div className="admin-form-group">
-                                <label className="admin-label">Product Images ({selectedImages.length} selected)</label>
-                                <div style={{ border: '2px dashed #eaeaea', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
-                                    <input
-                                        type="file"
-                                        multiple
-                                        accept="image/*,video/*"
-                                        onChange={handleFileChange}
-                                        style={{ marginBottom: '10px' }}
-                                    />
-
-                                    {/* Selected Images Preview List */}
-                                    {selectedImages.length > 0 && (
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '15px', justifyContent: 'center' }}>
-                                            {selectedImages.map((file, index) => (
-                                                <div key={index} style={{ position: 'relative', width: '80px', height: '80px' }}>
-                                                    <img
-                                                        src={URL.createObjectURL(file)}
-                                                        alt="preview"
-                                                        onClick={() => setViewingImage(file)}
-                                                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px', cursor: 'zoom-in', border: '1px solid #ddd' }}
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeImage(index)}
-                                                        style={{
-                                                            position: 'absolute', top: '-8px', right: '-8px',
-                                                            background: '#ef4444', color: 'white', border: 'none',
-                                                            borderRadius: '50%', width: '22px', height: '22px',
-                                                            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                                                        }}
-                                                    >
-                                                        ×
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                <label className="admin-label">Images</label>
+                                <input type="file" multiple accept="image/*" onChange={handleFileChange} />
+                                <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginTop: '5px' }}>
+                                    {selectedImages.map((f, i) => <div key={i}><img src={URL.createObjectURL(f)} style={{ width: 50, height: 50, objectFit: 'cover' }} alt="" /><span onClick={() => removeImage(i)} style={{ cursor: 'pointer', color: 'red' }}>x</span></div>)}
                                 </div>
                             </div>
-
-                            <div className="admin-form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <input
-                                    type="checkbox"
-                                    id="isNewArrival"
-                                    checked={formData.isNewArrival}
-                                    onChange={e => setFormData({ ...formData, isNewArrival: e.target.checked })}
-                                    style={{ width: '20px', height: '20px', accentColor: '#1A4D33' }}
-                                />
-                                <label htmlFor="isNewArrival" style={{ margin: 0, fontWeight: '500', cursor: 'pointer' }}>Mark as New Arrival</label>
-                            </div>
-
-                            <div style={{ display: 'flex', gap: '15px', marginTop: '20px' }}>
-                                <button type="submit" className="admin-btn admin-btn-primary" disabled={submitting}>
-                                    {submitting ? 'Saving...' : (editMode ? 'Update Product' : 'Save Product')}
-                                </button>
-                                {editMode && (
-                                    <button type="button" onClick={handleCancel} className="admin-btn admin-btn-secondary">
-                                        Cancel Edit
-                                    </button>
-                                )}
-                            </div>
+                            <button type="submit" className="admin-btn admin-btn-primary" disabled={submitting}>{submitting ? 'Saving' : 'Save Product'}</button>
                         </form>
                     </div>
                 )}
@@ -353,6 +517,9 @@ const ProductManager = () => {
                         <table className="admin-table">
                             <thead>
                                 <tr>
+                                    <th style={{ width: '40px', paddingLeft: '15px' }}>
+                                        <input type="checkbox" checked={allSelected} onChange={toggleSelectAll} />
+                                    </th>
                                     <th>Image</th>
                                     <th>Title</th>
                                     <th>Price</th>
@@ -362,29 +529,26 @@ const ProductManager = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {products.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
-                                            {loading ? 'Loading products...' : 'No products found. Add one above!'}
-                                        </td>
-                                    </tr>
+                                {visibleProducts.length === 0 ? (
+                                    <tr><td colSpan="7" style={{ textAlign: 'center', padding: '30px' }}>No products found.</td></tr>
                                 ) : (
-                                    products.filter(p => !filterCategory || p.category?._id === filterCategory).map(product => (
-                                        <tr key={product._id}>
+                                    visibleProducts.map(product => (
+                                        <tr key={product._id} style={{ backgroundColor: selectedIds.includes(product._id) ? '#f9f9f9' : 'transparent' }}>
+                                            <td style={{ paddingLeft: '15px' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedIds.includes(product._id)}
+                                                    onChange={() => toggleSelectOne(product._id)}
+                                                />
+                                            </td>
                                             <td><img src={product.images?.[0] || 'placeholder.jpg'} alt="" className="table-img" /></td>
                                             <td style={{ fontWeight: '500' }}>{product.title}</td>
                                             <td>₹{product.price}</td>
-                                            <td>
-                                                <span className={`status-badge ${product.stockQuantity < 5 ? 'status-danger' : 'status-success'}`}>
-                                                    {product.stockQuantity} {product.stockQuantity < 5 ? 'Low' : 'In Stock'}
-                                                </span>
-                                            </td>
+                                            <td>{product.stockQuantity}</td>
                                             <td>{product.category?.name || 'Uncategorized'}</td>
                                             <td>
                                                 <button className="admin-btn admin-btn-secondary" onClick={() => handleEdit(product)} style={{ marginRight: '5px', padding: '6px 12px', fontSize: '0.8rem' }}>Edit</button>
-                                                <button className="admin-btn admin-btn-danger" onClick={() => handleDelete(product._id)} disabled={submitting} style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
-                                                    Delete
-                                                </button>
+                                                <button className="admin-btn admin-btn-danger" onClick={() => handleDelete(product._id)} style={{ padding: '6px 12px', fontSize: '0.8rem' }}>Delete</button>
                                             </td>
                                         </tr>
                                     ))
@@ -394,44 +558,9 @@ const ProductManager = () => {
                     </div>
                 </div>
 
-                {/* Image Preview Modal */}
                 {viewingImage && (
-                    <div style={{
-                        position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                        background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        zIndex: 1000, backdropFilter: 'blur(5px)'
-                    }} onClick={() => setViewingImage(null)}>
-                        <div style={{
-                            position: 'relative',
-                            maxWidth: '90%',
-                            maxHeight: '90%'
-                        }} onClick={(e) => e.stopPropagation()}>
-                            <button
-                                onClick={() => setViewingImage(null)}
-                                style={{
-                                    position: 'absolute', top: '-40px', right: 0,
-                                    background: 'transparent', border: 'none', color: 'white',
-                                    fontSize: '2rem', cursor: 'pointer'
-                                }}
-                            >
-                                &times;
-                            </button>
-
-                            {viewingImage.type.startsWith('video/') ? (
-                                <video
-                                    src={URL.createObjectURL(viewingImage)}
-                                    controls
-                                    autoPlay
-                                    style={{ maxWidth: '100%', maxHeight: '90vh', borderRadius: '8px' }}
-                                />
-                            ) : (
-                                <img
-                                    src={URL.createObjectURL(viewingImage)}
-                                    alt="Full Preview"
-                                    style={{ maxWidth: '100%', maxHeight: '90vh', borderRadius: '8px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}
-                                />
-                            )}
-                        </div>
+                    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={() => setViewingImage(null)}>
+                        <img src={URL.createObjectURL(viewingImage)} alt="" style={{ maxWidth: '90%', maxHeight: '90%' }} />
                     </div>
                 )}
             </div>

@@ -68,7 +68,23 @@
 .social-links {
     margin-top: 30px;
     display: flex;
-    gap: 15px;
+    gap: 20px;
+}
+
+.social-links a {
+    font-size: 1.5rem;
+    /* Increased icon size */
+    color: var(--color-text-primary);
+    transition: transform 0.2s ease, color 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.social-links a:hover {
+    transform: translateY(-3px);
+    color: #d4af37;
+    /* Gold accent color on hover */
+    text-decoration: none;
 }
 
 .footer-bottom {

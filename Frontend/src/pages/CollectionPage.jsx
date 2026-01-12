@@ -116,7 +116,12 @@ const CollectionPage = () => {
                             return (
                                 <Link to={`/product/${product._id}`} key={product._id} className="product-card" style={{ textDecoration: 'none', color: 'inherit' }}>
                                     <div className="product-image">
-                                        <img src={product.images[0] || 'placeholder.jpg'} alt={product.title} loading="lazy" />
+                                        <img
+                                            src={product.images?.[0] || 'https://via.placeholder.com/400x500?text=No+Image'}
+                                            alt={product.title}
+                                            loading="lazy"
+                                            onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/400x500?text=Error'; }}
+                                        />
                                         {hasDiscount && (
                                             <div className="discount-badge">
                                                 {product.discountPercentage}% OFF
@@ -125,6 +130,11 @@ const CollectionPage = () => {
                                         <div className="quick-view">View Details</div>
                                     </div>
                                     <div className="product-info">
+                                        {product.category?.name && (
+                                            <div style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', marginBottom: '4px', letterSpacing: '0.05em', fontFamily: 'Outfit, sans-serif' }}>
+                                                {product.category.name}
+                                            </div>
+                                        )}
                                         <h4>{product.title}</h4>
                                         <div className="price-container">
                                             {hasDiscount ? (

@@ -30,6 +30,10 @@
     /* Keeping text white for now, can adjust if needed */
 }
 
+.header.scrolled .hamburger-btn {
+    color: #1A4D33;
+}
+
 .main-header {
     display: flex;
     justify-content: space-between;
@@ -193,14 +197,28 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    /* Changed from center to prevent clipping on all screens */
+    padding-top: 20px;
     padding-right: 50px;
+    overflow-y: auto;
+    max-height: 100%;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+}
+
+.sidebar-content::-webkit-scrollbar {
+    display: none;
 }
 
 /* Sidebar Links */
 .sidebar-links {
     list-style: none;
     text-align: right;
+    padding-bottom: 40px;
+    /* Bottom padding for scroll */
 }
 
 /* --- STAGGERED ANIMATION ITEMS --- */
@@ -330,7 +348,7 @@
     }
 
     .sidebar-left {
-        padding: 80px 20px 40px;
+        padding: 40px 20px 20px;
         width: 100%;
     }
 
@@ -351,7 +369,8 @@
 
     .sidebar-left {
         width: 100%;
-        padding: 80px 40px;
+        padding: 40px 20px;
+        /* Reduced top padding to prevent clipping */
         align-items: center;
     }
 
@@ -364,6 +383,8 @@
         padding-right: 0;
         width: 100%;
         align-items: center;
+        justify-content: flex-start;
+        padding-top: 20px;
     }
 
     .sidebar-links {
@@ -400,5 +421,37 @@
 
     .sidebar-links a {
         font-size: 1.4rem;
+    }
+}
+
+/* --- Giveaway Link Animation --- */
+.giveaway-link {
+    color: #c5a059 !important;
+    /* Gold */
+    font-weight: 700 !important;
+    position: relative;
+    display: inline-block;
+    transition: transform 0.3s ease;
+    animation: goldShimmer 2s infinite ease-in-out;
+}
+
+.giveaway-link:hover {
+    transform: scale(1.05) translateX(5px);
+}
+
+@keyframes goldShimmer {
+    0% {
+        opacity: 0.9;
+        text-shadow: 0 0 0px rgba(197, 160, 89, 0);
+    }
+
+    50% {
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(197, 160, 89, 0.5);
+    }
+
+    100% {
+        opacity: 0.9;
+        text-shadow: 0 0 0px rgba(197, 160, 89, 0);
     }
 }
