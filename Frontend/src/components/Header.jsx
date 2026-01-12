@@ -165,7 +165,7 @@ const Header = ({ isAnnouncementVisible }) => {
                       <Link to="/about" onClick={toggleSidebar}>WHO WE ARE</Link>
                     </li>
                     <li style={{ transitionDelay: getDelay(totalItems - 1) }}>
-                      <Link to="/giveaway" onClick={toggleSidebar} className="giveaway-link">UNLOCK GIVEAWAY</Link>
+                      <Link to="/giveaway" onClick={toggleSidebar} className="giveaway-link">SYLA COLLAB PROGRAM</Link>
                     </li>
                   </>
                 );
