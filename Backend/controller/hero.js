@@ -5,22 +5,33 @@ export default class HeroController {
     // Create new slide
     async createSlide(req, res) {
         try {
-            const { image: bodyImage, title, subtitle, link, order } = req.body;
+            const { image: bodyImage, mobileImage: bodyMobileImage, title, subtitle, link, order, enableZoom, showButton } = req.body;
 
-            const image = req.file ? req.file.path : bodyImage;
+            const imagePath = req.files && req.files['image'] ? req.files['image'][0].path : bodyImage;
+            const mobileImagePath = req.files && req.files['mobileImage'] ? req.files['mobileImage'][0].path : bodyMobileImage;
+
+            if (!imagePath) {
+                return res.status(400).json({ message: "Desktop Image is required" });
+            }
 
             const newSlide = new HeroSlide({
-                image,
+                image: imagePath,
+                mobileImage: mobileImagePath,
                 title,
                 subtitle,
                 link,
+                enableZoom: enableZoom === 'false' ? false : true,
+                showButton: showButton === 'false' ? false : true,
                 order
             });
 
             await newSlide.save();
             return res.status(201).json({ message: "Hero slide added", slide: newSlide });
         } catch (error) {
-            if (req.file) await deleteFromCloudinary(req.file.path);
+            if (req.files) {
+                if (req.files['image']) await deleteFromCloudinary(req.files['image'][0].path);
+                if (req.files['mobileImage']) await deleteFromCloudinary(req.files['mobileImage'][0].path);
+            }
             return res.status(500).json({ message: "Error adding slide", error: error.message });
         }
     }
@@ -38,18 +49,27 @@ export default class HeroController {
     // Update Slide
     async updateSlide(req, res) {
         try {
-            const { id } = req.body; // Changed from req.params
+            const { id } = req.body;
             if (!id) return res.status(400).json({ message: "Slide ID is required" });
 
             const updateData = { ...req.body };
-            if (req.file) {
-                updateData.image = req.file.path;
+
+            if (req.files) {
+                if (req.files['image']) {
+                    updateData.image = req.files['image'][0].path;
+                }
+                if (req.files['mobileImage']) {
+                    updateData.mobileImage = req.files['mobileImage'][0].path;
+                }
             }
 
             const updatedSlide = await HeroSlide.findByIdAndUpdate(id, updateData, { new: true });
             return res.json({ message: "Slide updated", slide: updatedSlide });
         } catch (error) {
-            if (req.file) await deleteFromCloudinary(req.file.path);
+            if (req.files) {
+                if (req.files['image']) await deleteFromCloudinary(req.files['image'][0].path);
+                if (req.files['mobileImage']) await deleteFromCloudinary(req.files['mobileImage'][0].path);
+            }
             return res.status(500).json({ message: "Error updating slide", error: error.message });
         }
     }

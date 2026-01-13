@@ -5,6 +5,8 @@ import '../styles/ProductGrid.css';
 import API_HOST from '../config';
 import ProductCardShimmer from './ProductCardShimmer';
 
+import ShimmerImage from './ShimmerImage';
+
 import imgProd1 from '../assets/images/IMG_6952.JPG';
 import imgProd2 from '../assets/images/IMG_6956.JPG';
 import imgProd3 from '../assets/images/IMG_6959.JPG';
@@ -55,7 +57,12 @@ const ProductGrid = () => {
                         return (
                             <Link to={`/product/${product._id}`} key={product._id} className="product-card" style={{ textDecoration: 'none', color: 'inherit' }}>
                                 <div className="product-image">
-                                    <img src={product.images[0] || 'placeholder.jpg'} alt={product.title} loading="lazy" />
+                                    <ShimmerImage
+                                        src={product.images[0] || 'placeholder.jpg'}
+                                        alt={product.title}
+                                        loading="lazy"
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    />
                                     {hasDiscount && (
                                         <div className="discount-badge">
                                             {product.discountPercentage}% OFF

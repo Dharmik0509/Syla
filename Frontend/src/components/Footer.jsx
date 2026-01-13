@@ -1,9 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Footer.css';
-import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa';
+import { FaFacebookF, FaInstagram, FaTelegramPlane } from 'react-icons/fa';
+import API_HOST from '../config';
 
 const Footer = () => {
+    const [email, setEmail] = useState('');
+
+    const handleSubscribe = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await fetch(`${API_HOST}/api/add-subscriber`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert(data.message);
+                setEmail('');
+            } else {
+                alert(data.message || 'Subscription failed');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Something went wrong');
+        }
+    };
     return (
         <footer className="footer">
             <div className="container footer-content">
@@ -21,8 +44,8 @@ const Footer = () => {
                     <h4>INFORMATION</h4>
                     <ul>
                         <li><Link to="/about">Our Story</Link></li>
-                        <li><Link to="/pages/craft-heritage">Craft & Heritage</Link></li>
-                        <li><Link to="/pages/careers">Careers</Link></li>
+
+
                         <li><Link to="/contact">Contact Us</Link></li>
                     </ul>
                 </div>
@@ -40,14 +63,20 @@ const Footer = () => {
                 <div className="footer-section newsletter">
                     <h4>SUBSCRIBE</h4>
                     <p>Join our family to receive updates on new launches and events.</p>
-                    <form className="newsletter-form">
-                        <input type="email" placeholder="Email Address" required />
+                    <form className="newsletter-form" onSubmit={handleSubscribe}>
+                        <input
+                            type="email"
+                            placeholder="Email Address"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
                         <button type="submit">→</button>
                     </form>
                     <div className="social-links">
                         <a href="https://www.facebook.com/share/1CRrJ9W1MT/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><FaFacebookF /></a>
                         <a href="https://www.instagram.com/syla.india?igsh=aWYwOGlwbW85MGRv" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><FaInstagram /></a>
-                        <Link to="#" aria-label="YouTube"><FaYoutube /></Link>
+                        <a href="https://t.me/sylaindia" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><FaTelegramPlane /></a>
                     </div>
                 </div>
             </div>

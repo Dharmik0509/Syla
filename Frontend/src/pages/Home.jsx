@@ -5,10 +5,7 @@ import StorySection from '../components/StorySection';
 import ProductGrid from '../components/ProductGrid';
 
 const Home = () => {
-    // Simple scroll-to-top on mount
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
+
 
     return (
         <div className="home-page">

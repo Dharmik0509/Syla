@@ -6,6 +6,7 @@ import HeroController from "./controller/hero.js";
 import DiscountController from "./controller/discount.js";
 import AnnouncementController from './controller/announcement.js';
 import GiveawayController from './controller/giveaway.js';
+import SubscriberController from './controller/subscriber.js';
 import { verifyToken } from "./middleware/auth.js";
 
 import upload from "./middleware/upload.js"; // Import upload middleware
@@ -18,6 +19,7 @@ const heroController = new HeroController();
 const discountController = new DiscountController();
 const announcementController = new AnnouncementController();
 const giveawayController = new GiveawayController();
+const subscriberController = new SubscriberController();
 
 // Server Health Check (GET - Browser Friendly)
 router.get("/", (req, res) => {
@@ -51,9 +53,9 @@ router.post("/bulk-delete-products", verifyToken, productController.bulkDeletePr
 router.post("/bulk-update-products", verifyToken, productController.bulkUpdateProducts);
 
 // Hero Section Routes (Protected actions, Public read)
-router.post("/create-hero-slide", verifyToken, upload.single('image'), heroController.createSlide);
+router.post("/create-hero-slide", verifyToken, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'mobileImage', maxCount: 1 }]), heroController.createSlide);
 router.post("/get-hero-slides", heroController.getSlides);
-router.post("/update-hero-slide", verifyToken, upload.single('image'), heroController.updateSlide);
+router.post("/update-hero-slide", verifyToken, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'mobileImage', maxCount: 1 }]), heroController.updateSlide);
 
 router.post("/delete-hero-slide", verifyToken, heroController.deleteSlide);
 
@@ -77,5 +79,10 @@ router.post('/delete-announcement', verifyToken, (req, res) => announcementContr
 router.post('/giveaway/enter', (req, res) => giveawayController.createEntry(req, res));
 router.get('/giveaway/entries', verifyToken, (req, res) => giveawayController.getAllEntries(req, res));
 router.post('/giveaway/select-winner', verifyToken, (req, res) => giveawayController.selectWinner(req, res));
+
+// Subscriber Routes
+router.post('/add-subscriber', (req, res) => subscriberController.addSubscriber(req, res));
+router.post('/get-subscribers', verifyToken, (req, res) => subscriberController.getSubscribers(req, res));
+router.post('/delete-subscriber', verifyToken, (req, res) => subscriberController.deleteSubscriber(req, res));
 
 export default router;

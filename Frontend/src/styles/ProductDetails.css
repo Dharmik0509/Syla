@@ -11,7 +11,7 @@
     background-color: var(--syla-cream);
     min-height: 100vh;
     padding-bottom: 4rem;
-    padding-top: var(--header-height, 80px);
+    padding-top: calc(var(--header-height, 80px) + 20px);
     /* Fallback */
 }
 

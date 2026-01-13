@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import API_HOST from '../config';
 import '../styles/ProductDetails.css';
+import ShimmerImage from '../components/ShimmerImage';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -13,7 +14,6 @@ const ProductDetails = () => {
 
     useEffect(() => {
         fetchProduct();
-        window.scrollTo(0, 0);
     }, [id]);
 
     const fetchProduct = async () => {
@@ -41,9 +41,16 @@ const ProductDetails = () => {
 
     const handleWhatsAppOrder = () => {
         if (!product) return;
-        const priceText = hasDiscount ? `Original: ₹${product.price}, Deal Price: ₹${discountedPrice}` : `Price: ₹${product.price}`;
-        const message = `Hi, I would like to order ${product.title} (SKU: ${product.sku}). ${priceText}`;
-        const url = `https://wa.me/919999999999?text=${encodeURIComponent(message)}`;
+        const currentSrc = product.images?.[selectedImage] || product.images?.[0] || '';
+        const price = hasDiscount ? discountedPrice : product.price;
+
+        const message = `Hello , I want to order this piece 
+Product name : ${product.title}
+Product size : Free Size
+Product price : ₹${price}
+Product img : ${currentSrc}`;
+
+        const url = `https://wa.me/919274720033?text=${encodeURIComponent(message)}`;
         window.open(url, '_blank');
     };
 
@@ -95,7 +102,7 @@ const ProductDetails = () => {
                             }
 
                             return (
-                                <img
+                                <ShimmerImage
                                     key={selectedImage}
                                     src={currentSrc}
                                     alt={product.title}

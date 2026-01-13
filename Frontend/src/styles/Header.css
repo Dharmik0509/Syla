@@ -278,7 +278,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-size: cover;
+    background-size: contain;
+    background-repeat: no-repeat;
     background-position: center;
     opacity: 0;
     transition: opacity 0.8s ease, transform 1.2s ease;
@@ -323,8 +324,8 @@
     letter-spacing: 1px;
 }
 
-/* Media (Video/Image) inside Sidebar Container */
-.sidebar-media {
+/* Blurred Backdrop Layer */
+.sidebar-media-blur {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -333,6 +334,24 @@
     position: absolute;
     top: 0;
     left: 0;
+    filter: blur(25px);
+    opacity: 0.5;
+    transform: scale(1.1);
+    z-index: 0;
+}
+
+/* Media (Video/Image) inside Sidebar Container */
+.sidebar-media {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
 }
 
 /* --- RESPONSIVE ADJUSTMENTS --- */
@@ -364,7 +383,15 @@
     }
 
     .sidebar-right {
-        display: none;
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        opacity: 0.25;
+        pointer-events: none;
     }
 
     .sidebar-left {

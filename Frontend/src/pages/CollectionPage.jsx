@@ -3,24 +3,25 @@ import { useParams, Link } from 'react-router-dom';
 import '../styles/ProductGrid.css';
 import API_HOST from '../config';
 import ProductCardShimmer from '../components/ProductCardShimmer';
+import ShimmerImage from '../components/ShimmerImage';
+
+import { useShop } from '../context/ShopContext';
 
 const CollectionPage = () => {
     const { categoryId } = useParams();
+    const { categories, loading: globalLoading } = useShop();
     const [products, setProducts] = useState([]);
     const [categoryInfo, setCategoryInfo] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Wait for global categories to load
+        if (globalLoading) return;
+
         const fetchData = async () => {
             setLoading(true);
             try {
-                // 1. Fetch Categories to resolve slug
-                const catResponse = await fetch(`${API_HOST}/api/get-categories`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const categories = await catResponse.json();
-
+                // 1. Resolve Category from Global Context
                 let filter = {};
                 let currentCategory = null;
 
@@ -51,8 +52,7 @@ const CollectionPage = () => {
         };
 
         fetchData();
-        window.scrollTo(0, 0);
-    }, [categoryId]);
+    }, [categoryId, categories, globalLoading]);
 
     if (loading) {
         return (
@@ -116,11 +116,12 @@ const CollectionPage = () => {
                             return (
                                 <Link to={`/product/${product._id}`} key={product._id} className="product-card" style={{ textDecoration: 'none', color: 'inherit' }}>
                                     <div className="product-image">
-                                        <img
+                                        <ShimmerImage
                                             src={product.images?.[0] || 'https://via.placeholder.com/400x500?text=No+Image'}
                                             alt={product.title}
                                             loading="lazy"
                                             onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/400x500?text=Error'; }}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         />
                                         {hasDiscount && (
                                             <div className="discount-badge">

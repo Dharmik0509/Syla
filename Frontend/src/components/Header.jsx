@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
 import API_HOST from '../config';
+import { useShop } from '../context/ShopContext';
 
 // Import Sidebar Images
 import imgSarees from '../assets/images/IMG_6925.JPG';
@@ -33,10 +34,10 @@ const Header = ({ isAnnouncementVisible }) => {
   const [activeImage, setActiveImage] = useState(null);
   const navigate = useNavigate();
 
+  const { categories: rawCategories } = useShop();
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    fetchCategories();
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
@@ -45,33 +46,45 @@ const Header = ({ isAnnouncementVisible }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch(`${API_HOST}/api/get-categories`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      const data = await response.json();
-      if (response.ok) {
-        // Map backend categories to menu structure
-        // Assuming categories have name, slug (or we construct path from name)
-        // If categories don't have images yet, we might need a placeholder or just omit image
-        const dynamicItems = data.map(cat => ({
-          name: cat.name,
-          // Use category image if available, else fallback or random from assets? 
-          // For now, let's try to pass the first product image or category image if available.
-          // Adjusting based on Category Schema viewing previously, it has parentCategory etc.
-          image: cat.image || imgSarees, // Fallback image for now
-          path: `/collections/${cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-')}`
-        }));
-        setCategories(dynamicItems);
-      }
-    } catch (error) {
-      console.error("Failed to fetch menu items", error);
-    }
+  /* Static Image Map for Fallback */
+  const staticImageMap = {
+    '3pc set kurti': imgSuits,
+    'casual dress': imgFabrics,
+    'gown': imgLehengas,
+    'indo western': imgBlouses,
+    'choli saree': imgSarees,
+    'chaniya choli': imgDupattas,
+    'choli suit': imgGifts,
+    // Generic Fallbacks
+    'saree': imgSarees,
+    'lehenga': imgLehengas,
+    'suit': imgSuits,
+    'dress': imgFabrics,
+    'kurti': imgSuits,
+    'dupatta': imgDupattas,
+    'blouse': imgBlouses
   };
+
+  useEffect(() => {
+    if (rawCategories && rawCategories.length > 0) {
+      const dynamicItems = rawCategories.map(cat => {
+        const lowerName = cat.name.toLowerCase();
+        // Try specific match first, then partial match
+        let matchedImage = staticImageMap[lowerName];
+        if (!matchedImage) {
+          const key = Object.keys(staticImageMap).find(k => lowerName.includes(k));
+          if (key) matchedImage = staticImageMap[key];
+        }
+
+        return {
+          name: cat.name,
+          image: cat.image || matchedImage || imgSarees, // Priority: DB -> Static Map -> Default
+          path: `/collections/${cat.slug || lowerName.replace(/\s+/g, '-')}`
+        };
+      });
+      setCategories(dynamicItems);
+    }
+  }, [rawCategories]);
 
   const menuItemsToDisplay = categories.length > 0 ? categories : menuItems;
 
@@ -190,10 +203,18 @@ const Header = ({ isAnnouncementVisible }) => {
                   playsInline
                 />
               ) : (
-                <div
-                  className="sidebar-media"
-                  style={{ backgroundImage: `url(${item.image})` }}
-                ></div>
+                <>
+                  {/* Blurred Background to fill space */}
+                  <div
+                    className="sidebar-media-blur"
+                    style={{ backgroundImage: `url(${item.image})` }}
+                  ></div>
+                  {/* Main Image (Contained) */}
+                  <div
+                    className="sidebar-media"
+                    style={{ backgroundImage: `url(${item.image})` }}
+                  ></div>
+                </>
               )}
               <div className="sidebar-image-overlay"></div>
             </div>

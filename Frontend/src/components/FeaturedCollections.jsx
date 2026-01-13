@@ -8,54 +8,28 @@ import imgColl1 from '../assets/images/IMG_6943.JPG';
 import imgColl2 from '../assets/images/IMG_6944.JPG';
 import imgColl3 from '../assets/images/IMG_6948.JPG';
 
+import { useShop } from '../context/ShopContext';
+
 const FeaturedCollections = () => {
     const [ref, isVisible] = useScrollReveal();
+    const { categories, discounts, loading } = useShop();
     const [collections, setCollections] = useState([]);
-    const [activeDiscounts, setActiveDiscounts] = useState([]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Fetch Categories
-                const catResponse = await fetch(`${API_HOST}/api/get-categories`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const catData = await catResponse.json();
-
-                // Fetch Public Discounts
-                const discountResponse = await fetch(`${API_HOST}/api/fetch-public-discounts`);
-                const discountData = await discountResponse.json();
-
-                if (Array.isArray(discountData)) {
-                    setActiveDiscounts(discountData);
-                }
-
-                if (catData.length > 0) {
-                    setCollections(catData.slice(0, 3));
-                } else {
-                    // Fallback
-                    setCollections([
-                        { _id: 1, name: "Banarasi Sarees", image: imgColl1, slug: "sarees" },
-                        { _id: 2, name: "Bridal Lehengas", image: imgColl2, slug: "lehengas" },
-                        { _id: 3, name: "Handwoven Dupattas", image: imgColl3, slug: "dupattas" }
-                    ]);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                // Fallback on error
-                setCollections([
-                    { _id: 1, name: "Banarasi Sarees", image: imgColl1, slug: "sarees" },
-                    { _id: 2, name: "Bridal Lehengas", image: imgColl2, slug: "lehengas" },
-                    { _id: 3, name: "Handwoven Dupattas", image: imgColl3, slug: "dupattas" }
-                ]);
-            }
-        };
-        fetchData();
-    }, []);
+        if (categories && categories.length > 0) {
+            setCollections(categories.slice(0, 3));
+        } else if (!loading) {
+            // Fallback if loaded but empty (or error)
+            setCollections([
+                { _id: 1, name: "Banarasi Sarees", image: imgColl1, slug: "sarees" },
+                { _id: 2, name: "Bridal Lehengas", image: imgColl2, slug: "lehengas" },
+                { _id: 3, name: "Handwoven Dupattas", image: imgColl3, slug: "dupattas" }
+            ]);
+        }
+    }, [categories, loading]);
 
     const getDiscountForCategory = (categoryId) => {
-        const rule = activeDiscounts.find(d =>
+        const rule = discounts.find(d =>
             d.isActive &&
             d.appliesTo === 'CATEGORY' &&
             d.targetValues.includes(categoryId)

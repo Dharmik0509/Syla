@@ -18,9 +18,11 @@ const HeroManager = () => {
         title: '',
         subtitle: '',
         link: '',
+        enableZoom: true,
+        showButton: true,
     });
     const [selectedImage, setSelectedImage] = useState(null);
-    const [previewImage, setPreviewImage] = useState(null); // For showing current image
+    const [previewImage, setPreviewImage] = useState(null);
 
     useEffect(() => {
         fetchSlides();
@@ -34,6 +36,8 @@ const HeroManager = () => {
                 title: slideInSlot.title || '',
                 subtitle: slideInSlot.subtitle || '',
                 link: slideInSlot.link || '',
+                enableZoom: slideInSlot.enableZoom !== false,
+                showButton: slideInSlot.showButton !== false,
             });
             setCurrentSlideId(slideInSlot._id);
             setPreviewImage(slideInSlot.image);
@@ -43,6 +47,8 @@ const HeroManager = () => {
                 title: '',
                 subtitle: '',
                 link: '',
+                enableZoom: true,
+                showButton: true,
             });
             setCurrentSlideId(null);
             setPreviewImage(null);
@@ -80,7 +86,9 @@ const HeroManager = () => {
             data.append('title', formData.title);
             data.append('subtitle', formData.subtitle);
             data.append('link', formData.link);
-            data.append('order', selectedSlot); // Always use selected slot
+            data.append('order', selectedSlot);
+            data.append('enableZoom', formData.enableZoom);
+            data.append('showButton', formData.showButton);
 
             if (selectedImage) {
                 data.append('image', selectedImage);
@@ -232,6 +240,28 @@ const HeroManager = () => {
                                 />
                             </div>
 
+                            <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
+                                <input
+                                    type="checkbox"
+                                    id="zoomEffect"
+                                    checked={formData.enableZoom}
+                                    onChange={e => setFormData({ ...formData, enableZoom: e.target.checked })}
+                                    style={{ width: 'auto', margin: 0 }}
+                                />
+                                <label htmlFor="zoomEffect" style={{ margin: 0, cursor: 'pointer' }}>Enable Ken Burns Zoom Effect</label>
+                            </div>
+
+                            <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
+                                <input
+                                    type="checkbox"
+                                    id="showButton"
+                                    checked={formData.showButton}
+                                    onChange={e => setFormData({ ...formData, showButton: e.target.checked })}
+                                    style={{ width: 'auto', margin: 0 }}
+                                />
+                                <label htmlFor="showButton" style={{ margin: 0, cursor: 'pointer' }}>Show "Shop Now" Button</label>
+                            </div>
+
 
                             <div className="form-actions">
                                 <button type="submit" className="btn-save" disabled={submitting}>
@@ -263,7 +293,7 @@ const HeroManager = () => {
                                     </div>
                                 </div>
                             ) : (
-                                <div style={{ color: '#ccc' }}>No image selected</div>
+                                <div style={{ color: '#ccc', marginBottom: '2rem' }}>No image selected</div>
                             )}
                         </div>
                     </div>

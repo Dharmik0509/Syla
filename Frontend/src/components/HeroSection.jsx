@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/HeroSection.css';
+import '../styles/Shimmer.css';
 import API_HOST from '../config';
 
 import heroImg1 from '../assets/images/IMG_6940.JPG';
@@ -9,10 +10,27 @@ import heroImg3 from '../assets/images/IMG_6942.JPG';
 
 const heroImages = [heroImg1, heroImg2, heroImg3];
 
+// Helper to optimize Cloudinary URLs for speed and quality
+const getOptimizedUrl = (url) => {
+    if (!url) return url;
+    // Check if it's a Cloudinary URL (and not already optimized/transformed in a way we might break)
+    if (url.includes('cloudinary.com') && url.includes('/upload/')) {
+        // q_auto:best ensures practically lossless quality but optimized size
+        // f_auto selects WebP or AVIF automatically
+        return url.replace('/upload/', '/upload/q_auto:best,f_auto/');
+    }
+    return url;
+};
+
 const HeroSection = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [heroSlides, setHeroSlides] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [imagesLoaded, setImagesLoaded] = useState({});
+
+    const handleImageLoad = (index) => {
+        setImagesLoaded(prev => ({ ...prev, [index]: true }));
+    };
 
     useEffect(() => {
         fetchSlides();
@@ -56,7 +74,13 @@ const HeroSection = () => {
         return () => clearInterval(interval);
     }, [heroSlides]);
 
-    if (loading) return null; // Or a skeleton
+    if (loading) {
+        return (
+            <section className="hero-section" style={{ height: '90vh', position: 'relative' }}>
+                <div className="shimmer-wrapper" style={{ width: '100%', height: '100%' }}></div>
+            </section>
+        );
+    }
 
     const currentSlide = heroSlides[currentImageIndex] || {};
 
@@ -64,22 +88,34 @@ const HeroSection = () => {
         <section className="hero-section">
             <div className="hero-background">
                 {heroSlides.map((slide, index) => (
-                    <img
-                        key={slide._id || index}
-                        src={slide.image}
-                        alt={slide.title}
-                        className={`hero-slide ${index === currentImageIndex ? 'active' : ''}`}
-                    />
+                    <React.Fragment key={slide._id || index}>
+                        {!imagesLoaded[index] && (
+                            <div
+                                className={`hero-slide shimmer-wrapper ${index === currentImageIndex ? 'active' : ''}`}
+                                style={{ zIndex: 0 }}
+                            ></div>
+                        )}
+                        <img
+                            src={getOptimizedUrl(slide.image)}
+                            alt={slide.title}
+                            className={`hero-slide ${index === currentImageIndex ? 'active' : ''} ${slide.enableZoom !== false ? 'zoom-active' : ''}`}
+                            loading={index === 0 ? "eager" : "lazy"}
+                            fetchPriority={index === 0 ? "high" : "auto"}
+                            onLoad={() => handleImageLoad(index)}
+                            style={{ opacity: imagesLoaded[index] ? undefined : 0, transition: 'opacity 0.5s ease' }}
+                        />
+                    </React.Fragment>
                 ))}
                 <div className="overlay"></div>
             </div>
             <div className="hero-content container">
-                <h2 className="fade-in">{currentSlide.subtitle}</h2>
-                <h1 className="fade-in">{currentSlide.title}</h1>
-                <p className="fade-in">Handwoven masterpieces for your special day</p>
-                <div className="button-group fade-in">
-                    <Link to={currentSlide.link || "/collections/all"} className="primary-btn">Shop Now</Link>
-                </div>
+                {currentSlide.subtitle && <h2 className="fade-in">{currentSlide.subtitle}</h2>}
+                {currentSlide.title && <h1 className="fade-in">{currentSlide.title}</h1>}
+                {currentSlide.showButton !== false && (
+                    <div className="button-group fade-in">
+                        <Link to={currentSlide.link || "/collections/all"} className="primary-btn">Shop Now</Link>
+                    </div>
+                )}
             </div>
         </section>
     );

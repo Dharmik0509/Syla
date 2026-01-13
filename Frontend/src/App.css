@@ -1,3 +1,11 @@
 #root {
   width: 100%;
 }
+
+main {
+  transition: padding-top 0.4s ease-in-out;
+}
+
+main.with-announcement-padding {
+  padding-top: 40px;
+}

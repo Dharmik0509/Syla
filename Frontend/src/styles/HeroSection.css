@@ -1,13 +1,15 @@
 .hero-section {
     position: relative;
     width: 100%;
-    min-height: 80vh;
-    /* Fallback */
+    /* Auto height for no-crop */
+    min-height: auto;
     overflow: hidden;
     display: grid;
     grid-template-areas: "stack";
     background-color: #1a3c34;
     color: #fff;
+    /* Pushes content down so Header doesn't cover it */
+    padding-top: var(--header-height);
 }
 
 .hero-background {
@@ -24,13 +26,13 @@
     position: relative;
     width: 100%;
     height: auto;
-    /* Height defined by aspect ratio */
-    min-height: 100%;
-    /* Ensure coverage */
-    object-fit: cover;
+    /* Natural image size */
+    object-fit: contain;
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
-    /* Slow zoom effect */
+}
+
+.hero-slide.zoom-active {
     animation: zoomEffect 20s infinite alternate;
 }
 
@@ -38,20 +40,7 @@
     opacity: 1;
 }
 
-@media (max-width: 768px) {
-    .hero-content h1 {
-        font-size: 2.8rem;
-    }
 
-    .hero-section {
-        height: 70vh;
-    }
-
-    .hero-slide {
-        object-fit: cover;
-        /* Back to cover for mobile */
-    }
-}
 
 .overlay {
     grid-area: layers;
@@ -169,11 +158,11 @@
     }
 
     .hero-section {
-        height: 70vh;
+        height: auto;
     }
 
     .hero-slide {
-        object-fit: cover;
+        object-fit: contain;
     }
 }
 
