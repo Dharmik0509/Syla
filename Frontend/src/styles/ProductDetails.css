@@ -227,7 +227,16 @@ video.product-detail-image {
     }
 
     .main-image-container {
-        aspect-ratio: 3/4;
+        aspect-ratio: auto;
+        height: auto;
+        min-height: 300px;
+        /* Prevent complete collapse while loading */
+    }
+
+    .product-detail-image {
+        height: auto;
+        object-fit: contain;
+        /* Ensure full image is visible */
     }
 }
 
