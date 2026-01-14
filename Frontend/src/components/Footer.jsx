@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Footer.css';
-import { FaFacebookF, FaInstagram, FaTelegramPlane } from 'react-icons/fa';
+import { FaFacebookF, FaInstagram, FaTelegramPlane, FaWhatsapp } from 'react-icons/fa';
 import API_HOST from '../config';
 
 const Footer = () => {
@@ -77,6 +77,7 @@ const Footer = () => {
                         <a href="https://www.facebook.com/share/1CRrJ9W1MT/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><FaFacebookF /></a>
                         <a href="https://www.instagram.com/syla.india?igsh=aWYwOGlwbW85MGRv" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><FaInstagram /></a>
                         <a href="https://t.me/sylaindia" target="_blank" rel="noopener noreferrer" aria-label="Telegram"><FaTelegramPlane /></a>
+                        <a href="https://wa.me/919274720033" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><FaWhatsapp /></a>
                     </div>
                 </div>
             </div>

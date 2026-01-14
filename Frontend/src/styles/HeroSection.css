@@ -9,7 +9,7 @@
     background-color: #1a3c34;
     color: #fff;
     /* Pushes content down so Header doesn't cover it */
-    padding-top: var(--header-height);
+    padding-top: calc(var(--header-height) + 5px);
 }
 
 .hero-background {
