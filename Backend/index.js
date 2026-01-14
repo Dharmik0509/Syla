@@ -58,9 +58,32 @@ try {
 
 app.use("/api", router);
 
+// --- KEEP ALIVE MECHANISM FOR RENDER FREE TIER ---
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
+
 const PORT = process.env.PORT || 5000;
+
+const reloadWebsite = () => {
+    // Only ping if RENDER_EXTERNAL_URL is set (Production) to avoid local noise
+    if (process.env.RENDER_EXTERNAL_URL) {
+        console.log("RENDER_EXTERNAL_URL:", process.env.RENDER_EXTERNAL_URL);
+        const url = `${process.env.RENDER_EXTERNAL_URL}/health`;
+        fetch(url)
+            .then(response => console.log(`[Keep-Alive] Pinged ${url}: ${response.status}`))
+            .catch(error => console.error(`[Keep-Alive] Ping failed: ${error.message}`));
+    } else {
+        console.log("RENDER_EXTERNAL_URL is not set. Keep-Alive skipped (Dev Mode).");
+    }
+};
+
+// Ping every 14 minutes (Render sleeps after 15 mins of inactivity)
+setInterval(reloadWebsite, 14 * 60 * 1000);
+// -------------------------------------------------
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log("RENDER_EXTERNAL_URL:", process.env.RENDER_EXTERNAL_URL || "Not Set (Dev Mode)");
 }).on('error', (err) => {
     console.error("Server failed to start:", err);
 });

@@ -32,9 +32,16 @@ const Footer = () => {
             <div className="container footer-content">
                 <div className="footer-section">
                     <h4>VISIT US</h4>
-                    <p>Trivedi House,Chandralok Society</p>
-                    <p>Opp Mahendra Shah Hospital,</p>
-                    <p>Bhalej Road, Anand - 388001,(Guj)</p>
+                    <a
+                        href="https://www.google.com/maps/dir/?api=1&destination=Trivedi+House,+Chandralok+Society,+Opp+Mahendra+Shah+Hospital,+Bhalej+Road,+Anand+-+388001"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: 'inherit', textDecoration: 'none' }}
+                    >
+                        <p>Trivedi House, Chandralok Society</p>
+                        <p>Opp Mahendra Shah Hospital,</p>
+                        <p>Bhalej Road, Anand - 388001, (Guj)</p>
+                    </a>
                     <br />
                     <p><a href="tel:+919274720033">+91 92747 20033</a></p>
                     <p><a href="mailto:sylalife@gmail.com">sylalife@gmail.com</a></p>
