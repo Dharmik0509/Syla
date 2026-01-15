@@ -90,8 +90,14 @@ const HeroManager = () => {
             data.append('enableZoom', formData.enableZoom);
             data.append('showButton', formData.showButton);
 
+            // Cloudinary Config
+            data.append('uploadFolder', 'heroslides');
+
             if (selectedImage) {
-                data.append('image', selectedImage);
+                const extension = selectedImage.name.split('.').pop();
+                const newName = `HeroSlide_Slot${selectedSlot}.${extension}`;
+                const renamedFile = new File([selectedImage], newName, { type: selectedImage.type });
+                data.append('image', renamedFile);
             }
 
             let url = `${API_HOST}/api/create-hero-slide`;

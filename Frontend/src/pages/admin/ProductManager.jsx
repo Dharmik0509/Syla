@@ -155,12 +155,23 @@ const ProductManager = () => {
             const token = localStorage.getItem('adminToken');
             const data = new FormData();
 
+            // Cloudinary Organization Logic
+            const selectedCat = categories.find(c => c._id === bulkFormData.category);
+            const catName = selectedCat ? selectedCat.name.replace(/\s+/g, '_') : 'General';
+            data.append('uploadFolder', `products/${catName}`);
+
             let fileCounter = 0;
             const finalProducts = validItems.map(item => {
                 let itemIndices = [];
                 if (item.images && item.images.length > 0) {
-                    item.images.forEach(file => {
-                        data.append('images', file);
+                    item.images.forEach((file, imgIdx) => {
+                        // Rename File: Category_ProductTitle_Idx
+                        const cleanTitle = item.title.replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+                        const extension = file.name.split('.').pop();
+                        const newName = `${catName}_${cleanTitle}_${imgIdx}.${extension}`;
+                        const renamedFile = new File([file], newName, { type: file.type });
+
+                        data.append('images', renamedFile);
                         itemIndices.push(fileCounter);
                         fileCounter++;
                     });
@@ -258,7 +269,20 @@ const ProductManager = () => {
             const token = localStorage.getItem('adminToken');
             const data = new FormData();
             Object.keys(formData).forEach(key => data.append(key, formData[key]));
-            selectedImages.forEach(file => data.append('images', file));
+
+            // Cloudinary Organization Logic (Single)
+            const selectedCat = categories.find(c => c._id === formData.category);
+            const catName = selectedCat ? selectedCat.name.replace(/\s+/g, '_') : 'General';
+            data.append('uploadFolder', `products/${catName}`);
+
+            selectedImages.forEach((file, index) => {
+                const cleanTitle = formData.title.replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+                const extension = file.name.split('.').pop();
+                const newName = `${catName}_${cleanTitle}_${index}.${extension}`;
+                const renamedFile = new File([file], newName, { type: file.type });
+                data.append('images', renamedFile);
+            });
+
             if (editMode && currentId) data.append('id', currentId);
 
             const url = editMode ? `${API_HOST}/api/update-product` : `${API_HOST}/api/create-product`;

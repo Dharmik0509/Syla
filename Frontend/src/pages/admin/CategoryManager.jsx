@@ -59,7 +59,19 @@ const CategoryManager = () => {
             const formData = new FormData();
             formData.append('name', newCategory);
             if (parentCategory) formData.append('parentCategory', parentCategory);
-            if (selectedImage) formData.append('image', selectedImage);
+
+            // Cloudinary Config
+            formData.append('uploadFolder', 'category');
+
+            if (selectedImage) {
+                // Rename file to Category Name
+                const cleanName = newCategory.replace(/[^\w\s-]/g, '').replace(/\s+/g, '_');
+                const extension = selectedImage.name.split('.').pop();
+                const newName = `${cleanName}.${extension}`;
+                const renamedFile = new File([selectedImage], newName, { type: selectedImage.type });
+                formData.append('image', renamedFile);
+            }
+
             if (editMode && currentId) formData.append('id', currentId);
 
             const url = editMode ? `${API_HOST}/api/update-category` : `${API_HOST}/api/create-category`;
