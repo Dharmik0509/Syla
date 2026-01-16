@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import LoadingSpinner from './components/LoadingSpinner';
+import './App.css';
 import AnnouncementBar from './components/AnnouncementBar';
 
 // Lazy Load Pages

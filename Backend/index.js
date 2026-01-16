@@ -13,6 +13,8 @@ app.use(express.json());
 const allowedOrigins = [
     "https://syla-official.vercel.app",
     "https://www.syla-official.vercel.app",
+    "https://sylaindia.com",
+    "https://www.sylaindia.com",
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:5175",
