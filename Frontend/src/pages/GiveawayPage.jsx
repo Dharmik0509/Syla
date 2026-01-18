@@ -15,9 +15,52 @@ const GiveawayPage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const handleNameChange = (e) => {
+        // Allow only letters and spaces instantly
+        const value = e.target.value.replace(/[^A-Za-z\s]/g, '');
+        setFormData({ ...formData, [e.target.name]: value });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setStatus({ loading: true, type: '', message: '' });
+
+        // Basic Validation
+        const nameRegex = /^[A-Za-z\s]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^[6-9]\d{9}$/; // Indian mobile validation (starts with 6-9, 10 digits)
+
+        if (!nameRegex.test(formData.firstName)) {
+            setStatus({ loading: false, type: 'error', message: "First Name cannot contain numbers or special characters." });
+            return;
+        }
+
+        if (!nameRegex.test(formData.lastName)) {
+            setStatus({ loading: false, type: 'error', message: "Last Name cannot contain numbers or special characters." });
+            return;
+        }
+
+        if (!emailRegex.test(formData.email)) {
+            setStatus({ loading: false, type: 'error', message: "Please enter a valid email address." });
+            return;
+        }
+
+        if (!phoneRegex.test(formData.contactNo)) {
+            setStatus({ loading: false, type: 'error', message: "Please enter a valid 10-digit mobile number." });
+            return;
+        }
+
+        // Instagram Validation
+        let cleanInsta = formData.instagramId.trim();
+        if (cleanInsta.startsWith('@')) {
+            cleanInsta = cleanInsta.slice(1);
+        }
+        const instaRegex = /^[a-zA-Z0-9._]+$/;
+
+        if (!instaRegex.test(cleanInsta)) {
+            setStatus({ loading: false, type: 'error', message: "Please enter a valid Instagram ID (letters, numbers, dots, underscores)." });
+            return;
+        }
 
         try {
             const response = await fetch(`${API_HOST}/api/giveaway/enter`, {
@@ -52,7 +95,7 @@ const GiveawayPage = () => {
                                 type="text"
                                 name="firstName"
                                 value={formData.firstName}
-                                onChange={handleChange}
+                                onChange={handleNameChange}
                                 required
                                 style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
                             />
@@ -63,7 +106,7 @@ const GiveawayPage = () => {
                                 type="text"
                                 name="lastName"
                                 value={formData.lastName}
-                                onChange={handleChange}
+                                onChange={handleNameChange}
                                 required
                                 style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
                             />
