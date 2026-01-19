@@ -77,6 +77,7 @@ const Footer = () => {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            maxLength={50}
                         />
                         <button type="submit">→</button>
                     </form>
@@ -90,7 +91,7 @@ const Footer = () => {
             </div>
 
             <div className="footer-bottom container">
-                <p>© 2024 Syla Banaras. All rights reserved.</p>
+                <p>© 2026 Syla Banaras. All rights reserved.</p>
             </div>
         </footer>
     );

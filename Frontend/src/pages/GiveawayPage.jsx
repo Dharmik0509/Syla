@@ -21,6 +21,12 @@ const GiveawayPage = () => {
         setFormData({ ...formData, [e.target.name]: value });
     };
 
+    const handleContactChange = (e) => {
+        // Allow only numbers
+        const value = e.target.value.replace(/\D/g, '');
+        setFormData({ ...formData, [e.target.name]: value });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setStatus({ loading: true, type: '', message: '' });
@@ -96,6 +102,7 @@ const GiveawayPage = () => {
                                 name="firstName"
                                 value={formData.firstName}
                                 onChange={handleNameChange}
+                                maxLength={20}
                                 required
                                 style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
                             />
@@ -107,6 +114,7 @@ const GiveawayPage = () => {
                                 name="lastName"
                                 value={formData.lastName}
                                 onChange={handleNameChange}
+                                maxLength={20}
                                 required
                                 style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
                             />
@@ -131,7 +139,8 @@ const GiveawayPage = () => {
                             type="tel"
                             name="contactNo"
                             value={formData.contactNo}
-                            onChange={handleChange}
+                            onChange={handleContactChange}
+                            maxLength={15}
                             required
                             style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
                         />
