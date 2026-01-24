@@ -59,7 +59,7 @@ export default class ProductController {
                 query.title = { $regex: search, $options: 'i' };
             }
 
-            const products = await Product.find(query).populate('category', 'name');
+            const products = await Product.find(query).sort({ createdAt: -1 }).populate('category', 'name');
             return res.json(products);
         } catch (error) {
             return res.status(500).json({ message: "Error fetching products", error: error.message });
