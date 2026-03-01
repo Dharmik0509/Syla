@@ -24,6 +24,26 @@ const ProductManager = () => {
     });
     const [selectedImages, setSelectedImages] = useState([]);
 
+    // Local Storage Effect for single product addition
+    useEffect(() => {
+        if (showForm && !editMode) {
+            const savedDraft = localStorage.getItem('productFormDraft');
+            if (savedDraft) {
+                try {
+                    setFormData(JSON.parse(savedDraft));
+                } catch (e) {
+                    console.error('Failed to parse saved product draft:', e);
+                }
+            }
+        }
+    }, [showForm, editMode]);
+
+    useEffect(() => {
+        if (showForm && !editMode) {
+            localStorage.setItem('productFormDraft', JSON.stringify(formData));
+        }
+    }, [formData, showForm, editMode]);
+
     // --- BULK OPERATIONS STATE ---
     const [selectedIds, setSelectedIds] = useState([]);
     const [showBulkAdd, setShowBulkAdd] = useState(false);
@@ -38,11 +58,49 @@ const ProductManager = () => {
     // Initialize Batch Items when Bulk Mode opens
     useEffect(() => {
         if (showBulkAdd) {
-            setBatchItems(Array(10).fill(null).map(() => ({
-                title: '', price: '', stockQuantity: '1', category: '', description: '', images: [], isNewArrival: false
-            })));
+            const savedBulk = localStorage.getItem('productBulkDraft');
+            const savedBatch = localStorage.getItem('productBatchDraft');
+
+            if (savedBulk) {
+                try {
+                    setBulkFormData(JSON.parse(savedBulk));
+                } catch (e) {
+                    console.error('Failed to parse saved bulk draft:', e);
+                }
+            }
+
+            if (savedBatch) {
+                try {
+                    const parsedBatchItems = JSON.parse(savedBatch);
+                    // Ensure the images array is reset to empty because File objects cannot be persisted
+                    const restoredBatch = parsedBatchItems.map(item => ({ ...item, images: [] }));
+                    setBatchItems(restoredBatch);
+                } catch (e) {
+                    console.error('Failed to parse saved batch draft:', e);
+                    setBatchItems(Array(10).fill(null).map(() => ({
+                        title: '', price: '', stockQuantity: '1', category: '', description: '', images: [], isNewArrival: false
+                    })));
+                }
+            } else {
+                setBatchItems(Array(10).fill(null).map(() => ({
+                    title: '', price: '', stockQuantity: '1', category: '', description: '', images: [], isNewArrival: false
+                })));
+            }
         }
     }, [showBulkAdd]);
+
+    // Save Bulk state to local storage
+    useEffect(() => {
+        if (showBulkAdd) {
+            // Strip out File objects (images) from batchItems before saving to prevent stringify errors
+            const batchItemsToSave = batchItems.map(item => {
+                const { images, ...itemWithoutImages } = item;
+                return itemWithoutImages;
+            });
+            localStorage.setItem('productBulkDraft', JSON.stringify(bulkFormData));
+            localStorage.setItem('productBatchDraft', JSON.stringify(batchItemsToSave));
+        }
+    }, [bulkFormData, batchItems, showBulkAdd]);
 
     useEffect(() => {
         fetchProducts();
@@ -203,6 +261,14 @@ const ProductManager = () => {
                     showToast(resData.message, 'success');
                 }
                 setShowBulkAdd(false);
+                // Clear local storage after successful submission
+                localStorage.removeItem('productBulkDraft');
+                localStorage.removeItem('productBatchDraft');
+                setBulkFormData({
+                    category: '', price: '', stockQuantity: '',
+                    description: '', isNewArrival: false, titlePrefix: ''
+                });
+
                 fetchProducts();
             } else {
                 const err = await response.json();
@@ -253,6 +319,7 @@ const ProductManager = () => {
             category: '', description: '', isNewArrival: false
         });
         setSelectedImages([]);
+        localStorage.removeItem('productFormDraft');
     };
 
     const handleSubmit = async (e) => {
@@ -294,7 +361,7 @@ const ProductManager = () => {
 
             if (response.ok) {
                 showToast(editMode ? 'Product updated successfully!' : 'Product created successfully!', 'success');
-                handleCancel();
+                handleCancel(); // this already clears localStorage
                 fetchProducts();
             } else {
                 const errorData = await response.json();
