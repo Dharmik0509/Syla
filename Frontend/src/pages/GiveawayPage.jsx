@@ -56,15 +56,11 @@ const GiveawayPage = () => {
             return;
         }
 
-        // Instagram Validation
-        let cleanInsta = formData.instagramId.trim();
-        if (cleanInsta.startsWith('@')) {
-            cleanInsta = cleanInsta.slice(1);
-        }
-        const instaRegex = /^[a-zA-Z0-9._]+$/;
+        // Instagram Link Validation
+        const instaLinkRegex = /^(https?:\/\/)?(www\.)?instagram\.com\/[a-zA-Z0-9._]+\/?(\?.*)?$/;
 
-        if (!instaRegex.test(cleanInsta)) {
-            setStatus({ loading: false, type: 'error', message: "Please enter a valid Instagram ID (letters, numbers, dots, underscores)." });
+        if (!instaLinkRegex.test(formData.instagramId.trim())) {
+            setStatus({ loading: false, type: 'error', message: "Please enter a valid Instagram profile link (e.g., https://instagram.com/username)." });
             return;
         }
 
@@ -147,13 +143,13 @@ const GiveawayPage = () => {
                     </div>
 
                     <div>
-                        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Instagram ID</label>
+                        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Instagram Profile Link</label>
                         <input
                             type="text"
                             name="instagramId"
                             value={formData.instagramId}
                             onChange={handleChange}
-                            placeholder="@yourusername"
+                            placeholder="https://instagram.com/yourusername"
                             required
                             style={{ width: '100%', padding: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
                         />

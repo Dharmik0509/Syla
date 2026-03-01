@@ -94,7 +94,17 @@ const GiveawayManager = () => {
                         textAlign: 'center'
                     }}>
                         <h3 style={{ color: '#155724', margin: 0 }}>🎉 Winner: {winner.firstName} {winner.lastName} 🎉</h3>
-                        <p style={{ margin: '5px 0' }}>{winner.email} | {winner.contactNo} | {winner.instagramId}</p>
+                        <p style={{ margin: '5px 0' }}>
+                            {winner.email} | {winner.contactNo} |{' '}
+                            <a
+                                href={winner.instagramId.includes('instagram.com') ? (winner.instagramId.startsWith('http') ? winner.instagramId : `https://${winner.instagramId}`) : `https://instagram.com/${winner.instagramId.replace('@', '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: '#007bff', textDecoration: 'underline' }}
+                            >
+                                Instagram Profile
+                            </a>
+                        </p>
                     </div>
                 )}
 
@@ -125,7 +135,16 @@ const GiveawayManager = () => {
                                     <td>{entry.firstName} {entry.lastName}</td>
                                     <td>{entry.email}</td>
                                     <td>{entry.contactNo}</td>
-                                    <td>{entry.instagramId}</td>
+                                    <td>
+                                        <a
+                                            href={entry.instagramId.includes('instagram.com') ? (entry.instagramId.startsWith('http') ? entry.instagramId : `https://${entry.instagramId}`) : `https://instagram.com/${entry.instagramId.replace('@', '')}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ color: '#007bff', textDecoration: 'underline' }}
+                                        >
+                                            View Profile
+                                        </a>
+                                    </td>
                                     <td>{new Date(entry.createdAt).toLocaleDateString()}</td>
                                     <td>{entry.isWinner ? '🏆 WINNER' : 'Participant'}</td>
                                 </tr>
