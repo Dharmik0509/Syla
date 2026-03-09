@@ -79,6 +79,8 @@ router.post('/delete-announcement', verifyToken, (req, res) => announcementContr
 router.post('/giveaway/enter', (req, res) => giveawayController.createEntry(req, res));
 router.get('/giveaway/entries', verifyToken, (req, res) => giveawayController.getAllEntries(req, res));
 router.post('/giveaway/select-winner', verifyToken, (req, res) => giveawayController.selectWinner(req, res));
+router.post('/giveaway/delete-entry', verifyToken, (req, res) => giveawayController.deleteEntry(req, res));
+router.post('/giveaway/bulk-delete', verifyToken, (req, res) => giveawayController.bulkDeleteEntries(req, res));
 
 // Subscriber Routes
 router.post('/add-subscriber', (req, res) => subscriberController.addSubscriber(req, res));

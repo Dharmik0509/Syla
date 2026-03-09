@@ -75,4 +75,34 @@ export default class GiveawayController {
             return res.status(500).json({ message: "Error selecting winner", error: error.message });
         }
     }
+
+    // Delete Single Entry (Admin)
+    async deleteEntry(req, res) {
+        try {
+            const { id } = req.body;
+            if (!id) return res.status(400).json({ message: "ID is required" });
+
+            const deleted = await Giveaway.findByIdAndDelete(id);
+            if (!deleted) return res.status(404).json({ message: "Entry not found" });
+
+            return res.json({ message: "Entry deleted successfully" });
+        } catch (error) {
+            return res.status(500).json({ message: "Error deleting entry", error: error.message });
+        }
+    }
+
+    // Bulk Delete Entries (Admin)
+    async bulkDeleteEntries(req, res) {
+        try {
+            const { ids } = req.body;
+            if (!ids || !Array.isArray(ids) || ids.length === 0) {
+                return res.status(400).json({ message: "Please provide an array of IDs" });
+            }
+
+            const result = await Giveaway.deleteMany({ _id: { $in: ids } });
+            return res.json({ message: `Successfully deleted ${result.deletedCount} entries` });
+        } catch (error) {
+            return res.status(500).json({ message: "Error deleting entries", error: error.message });
+        }
+    }
 }

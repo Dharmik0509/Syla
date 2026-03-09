@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import API_HOST from '../../config';
+import { useAdminUI } from '../../context/AdminUIContext';
 import '../../styles/DiscountManager.css'; // Reuse table styles
 
 const GiveawayManager = () => {
+    const { showToast, confirmAction } = useAdminUI();
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [winner, setWinner] = useState(null);
-    const [selectedId, setSelectedId] = useState(null);
+    const [selectedId, setSelectedId] = useState(null); // For winner selection
+    const [selectedIds, setSelectedIds] = useState([]); // For bulk deletion
 
     useEffect(() => {
         fetchEntries();
@@ -34,14 +37,88 @@ const GiveawayManager = () => {
     };
 
     const pickWinner = async () => {
-        if (!window.confirm("Are you sure you want to pick a random winner?")) return;
-        await executeWinnerSelection({});
+        confirmAction("Are you sure you want to pick a random winner?", async () => {
+            await executeWinnerSelection({});
+        });
+    };
+
+    const toggleSelectAll = (e) => {
+        if (e.target.checked) {
+            setSelectedIds(entries.map(e => e._id));
+        } else {
+            setSelectedIds([]);
+        }
+    };
+
+    const toggleSelectOne = (id) => {
+        setSelectedIds(prev =>
+            prev.includes(id) ? prev.filter(pid => pid !== id) : [...prev, id]
+        );
+    };
+
+    const deleteSelected = async () => {
+        if (selectedIds.length === 0) {
+            showToast("Please select entries to delete", "error");
+            return;
+        }
+
+        confirmAction(`Are you sure you want to delete ${selectedIds.length} entries?`, async () => {
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch(`${API_HOST}/api/giveaway/bulk-delete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': token },
+                    body: JSON.stringify({ ids: selectedIds })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showToast(data.message, "success");
+                    setSelectedIds([]);
+                    if (selectedIds.includes(selectedId)) setSelectedId(null);
+                    fetchEntries();
+                } else {
+                    showToast(data.message, "error");
+                }
+            } catch (error) {
+                console.error("Error deleting entries:", error);
+                showToast("Error deleting entries", "error");
+            }
+        });
+    };
+
+    const deleteSingle = async (id) => {
+        confirmAction("Are you sure you want to delete this entry?", async () => {
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch(`${API_HOST}/api/giveaway/delete-entry`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': token },
+                    body: JSON.stringify({ id })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showToast(data.message, "success");
+                    if (selectedId === id) setSelectedId(null);
+                    setSelectedIds(prev => prev.filter(pid => pid !== id));
+                    fetchEntries();
+                } else {
+                    showToast(data.message, "error");
+                }
+            } catch (error) {
+                console.error("Error deleting entry:", error);
+                showToast("Error deleting entry", "error");
+            }
+        });
     };
 
     const declareManualWinner = async () => {
-        if (!selectedId) return alert("Please select a participant first.");
-        if (!window.confirm("Are you sure you want to declare this user as the winner?")) return;
-        await executeWinnerSelection({ id: selectedId });
+        if (!selectedId) {
+            showToast("Please select a participant first.", "error");
+            return;
+        }
+        confirmAction("Are you sure you want to declare this user as the winner?", async () => {
+            await executeWinnerSelection({ id: selectedId });
+        });
     };
 
     const executeWinnerSelection = async (payload) => {
@@ -57,15 +134,16 @@ const GiveawayManager = () => {
             });
             const data = await response.json();
             if (response.ok) {
-                alert(`Winner Selected: ${data.winner.firstName} ${data.winner.lastName}`);
+                showToast(`Winner Selected: ${data.winner.firstName} ${data.winner.lastName}`, "success");
                 setWinner(data.winner);
                 fetchEntries();
                 setSelectedId(null);
             } else {
-                alert(data.message);
+                showToast(data.message, "error");
             }
         } catch (error) {
             console.error("Error selecting winner:", error);
+            showToast("Error processing request", "error");
         }
     };
 
@@ -74,11 +152,16 @@ const GiveawayManager = () => {
             <div className="discount-manager"> {/* Reuse styles */}
                 <div className="dm-header">
                     <h2>Giveaway Entries ({entries.length})</h2>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <button className="add-btn" onClick={declareManualWinner} disabled={!selectedId} style={{ backgroundColor: '#007bff', opacity: !selectedId ? 0.6 : 1 }}>
-                            Declare Selected
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                        {selectedIds.length > 0 && (
+                            <button className="add-btn" onClick={deleteSelected} style={{ backgroundColor: '#dc3545', whiteSpace: 'nowrap' }}>
+                                Delete Selected ({selectedIds.length})
+                            </button>
+                        )}
+                        <button className="add-btn" onClick={declareManualWinner} disabled={!selectedId} style={{ backgroundColor: '#007bff', opacity: !selectedId ? 0.6 : 1, whiteSpace: 'nowrap' }}>
+                            Declare Winner
                         </button>
-                        <button className="add-btn" onClick={pickWinner} style={{ backgroundColor: '#28a745' }}>
+                        <button className="add-btn" onClick={pickWinner} style={{ backgroundColor: '#28a745', whiteSpace: 'nowrap' }}>
                             🏆 Pick Random
                         </button>
                     </div>
@@ -108,22 +191,37 @@ const GiveawayManager = () => {
                     </div>
                 )}
 
-                <div className="discounts-table">
-                    <table>
+                <div className="discounts-table" style={{ overflowX: 'auto', width: '100%' }}>
+                    <table style={{ minWidth: '900px' }}>
                         <thead>
                             <tr>
-                                <th>Select</th>
+                                <th>
+                                    <input
+                                        type="checkbox"
+                                        checked={entries.length > 0 && selectedIds.length === entries.length}
+                                        onChange={toggleSelectAll}
+                                    />
+                                </th>
+                                <th>Winner</th>
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Contact</th>
                                 <th>Instagram</th>
                                 <th>Date</th>
                                 <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {entries.map(entry => (
                                 <tr key={entry._id} style={entry.isWinner ? { backgroundColor: '#e8f5e9' } : {}}>
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds.includes(entry._id)}
+                                            onChange={() => toggleSelectOne(entry._id)}
+                                        />
+                                    </td>
                                     <td>
                                         <input
                                             type="radio"
@@ -147,6 +245,14 @@ const GiveawayManager = () => {
                                     </td>
                                     <td>{new Date(entry.createdAt).toLocaleDateString()}</td>
                                     <td>{entry.isWinner ? '🏆 WINNER' : 'Participant'}</td>
+                                    <td>
+                                        <button
+                                            onClick={() => deleteSingle(entry._id)}
+                                            style={{ padding: '4px 8px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
