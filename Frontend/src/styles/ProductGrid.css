@@ -124,14 +124,29 @@
 
 @media (max-width: 768px) {
     .product-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
 
     .product-grid-section {
-        padding: 40px 20px 60px;
+        padding: 30px 12px 50px;
     }
 
     .section-header h2 {
-        font-size: 2rem;
+        font-size: 1.8rem;
+    }
+
+    .product-info h4 {
+        font-size: 0.85rem;
+    }
+
+    .product-info p {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .product-grid {
+        grid-template-columns: 1fr;
     }
 }

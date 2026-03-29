@@ -11,6 +11,8 @@ import { verifyToken } from "./middleware/auth.js";
 
 import upload from "./middleware/upload.js"; // Import upload middleware
 
+import ModelController from './controller/model.js';
+
 const router = express.Router();
 const loginController = new Login();
 const categoryController = new CategoryController();
@@ -20,6 +22,7 @@ const discountController = new DiscountController();
 const announcementController = new AnnouncementController();
 const giveawayController = new GiveawayController();
 const subscriberController = new SubscriberController();
+const modelController = new ModelController();
 
 // Server Health Check (GET - Browser Friendly)
 router.get("/", (req, res) => {
@@ -33,6 +36,8 @@ router.get("/", (req, res) => {
 // Auth Routes (Public)
 router.post("/login", loginController.authenticate);
 router.post("/signup", loginController.createuser);
+router.post("/forgot-password", (req, res) => loginController.forgotPassword(req, res));
+router.post("/reset-password", (req, res) => loginController.resetPassword(req, res));
 
 // Category Routes (Protected)
 router.post("/create-category", verifyToken, upload.single('image'), categoryController.createCategory);
@@ -86,5 +91,54 @@ router.post('/giveaway/bulk-delete', verifyToken, (req, res) => giveawayControll
 router.post('/add-subscriber', (req, res) => subscriberController.addSubscriber(req, res));
 router.post('/get-subscribers', verifyToken, (req, res) => subscriberController.getSubscribers(req, res));
 router.post('/delete-subscriber', verifyToken, (req, res) => subscriberController.deleteSubscriber(req, res));
+
+// Our Models Routes
+// Preview endpoint — try to fetch Instagram DP without credentials
+router.get('/models/fetch-dp', async (req, res) => {
+    const { username } = req.query;
+    if (!username) return res.status(400).json({ url: null });
+
+    const headers = {
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+        'Accept': '*/*',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'X-IG-App-ID': '936619743392459',
+        'Referer': 'https://www.instagram.com/',
+        'Origin': 'https://www.instagram.com',
+    };
+
+    try {
+        // Try official-ish web_profile_info endpoint
+        const igRes = await fetch(
+            `https://www.instagram.com/api/v1/users/web_profile_info/?username=${encodeURIComponent(username)}`,
+            { headers }
+        );
+        if (igRes.ok) {
+            const data = await igRes.json();
+            const user = data?.data?.user;
+            const url = user?.profile_pic_url_hd || user?.profile_pic_url || null;
+            if (url) return res.json({ url });
+        }
+    } catch (_) {}
+
+    try {
+        // Fallback: scrape og:image from profile page
+        const pageRes = await fetch(`https://www.instagram.com/${encodeURIComponent(username)}/`, { headers });
+        if (pageRes.ok) {
+            const html = await pageRes.text();
+            const match = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/);
+            if (match?.[1]) return res.json({ url: match[1] });
+        }
+    } catch (_) {}
+
+    return res.json({ url: null }); // Caller handles fallback
+});
+
+router.post('/models/apply', upload.single('photo'), (req, res) => modelController.apply(req, res));  // Public — form submission
+router.get('/models/approved', (req, res) => modelController.getApproved(req, res));  // Public — homepage section
+router.get('/models/all', verifyToken, (req, res) => modelController.getAll(req, res));      // Admin
+router.post('/models/approve', verifyToken, (req, res) => modelController.approve(req, res)); // Admin
+router.post('/models/reject', verifyToken, (req, res) => modelController.reject(req, res));   // Admin
+router.post('/models/delete', verifyToken, (req, res) => modelController.remove(req, res));   // Admin
 
 export default router;

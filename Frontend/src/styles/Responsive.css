@@ -1,0 +1,445 @@
+/* =========================================
+   SYLA — GLOBAL RESPONSIVE STYLES
+   Breakpoints:
+   - Mobile S  : 320px–479px
+   - Mobile L  : 480px–767px
+   - Tablet    : 768px–1023px
+   - Desktop   : 1024px+
+   - Wide      : 1440px+
+   =========================================  */
+
+/* ── Base: box-sizing & overflow guards ── */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+img, video {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ── Container Utility ── */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* =============================================
+   HEADER RESPONSIVE
+   ============================================= */
+@media (max-width: 480px) {
+    .main-header {
+        padding: 5px 12px;
+    }
+
+    .logo-img {
+        height: 48px;
+    }
+
+    .header-right {
+        gap: 8px;
+    }
+
+    /* Shrink Sign In pill text on tiny screens */
+    .header-signin-btn span {
+        display: none;
+    }
+
+    .header-signin-btn {
+        padding: 7px 10px;
+        border-radius: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-header {
+        padding: 5px 16px;
+    }
+}
+
+/* =============================================
+   HERO SECTION RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+    .hero-content {
+        padding: 16px;
+    }
+
+    .hero-content h1 {
+        font-size: 2.4rem;
+    }
+
+    .hero-content h2 {
+        font-size: 1rem;
+        letter-spacing: 2px;
+    }
+
+    .hero-content p {
+        font-size: 1rem;
+    }
+
+    .button-group {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+        width: 100%;
+        max-width: 280px;
+        text-align: center;
+        padding: 13px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-content h1 {
+        font-size: 1.9rem;
+    }
+
+    .hero-content h2 {
+        font-size: 0.85rem;
+        letter-spacing: 1.5px;
+    }
+}
+
+/* =============================================
+   FEATURED COLLECTIONS RESPONSIVE
+   ============================================= */
+@media (max-width: 1024px) {
+    .collections-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .collections-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .featured-collections {
+        padding: 40px 12px;
+    }
+
+    .section-header {
+        margin-bottom: 30px;
+    }
+
+    .section-header h2 {
+        font-size: 1.6rem;
+    }
+
+    .card-info h3 {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .collections-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =============================================
+   PRODUCT GRID RESPONSIVE
+   ============================================= */
+@media (max-width: 1024px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .product-grid-section {
+        padding: 30px 12px 50px;
+    }
+}
+
+@media (max-width: 380px) {
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =============================================
+   PRODUCT DETAILS RESPONSIVE
+   ============================================= */
+@media (max-width: 1024px) {
+    .product-details-container {
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-details-page {
+        padding-bottom: 3rem;
+    }
+
+    .product-details-container {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 0.5rem 1rem 2rem;
+        width: 100%;
+    }
+
+    .product-gallery {
+        width: 100%;
+        max-width: 100%;
+        min-width: unset;
+    }
+
+    .product-info-section {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .product-title {
+        font-size: 1.8rem;
+    }
+
+    .thumbnail-img {
+        width: 60px;
+        height: 75px;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-title {
+        font-size: 1.5rem;
+    }
+
+    .product-price {
+        font-size: 1.4rem;
+    }
+
+    .add-to-cart-btn {
+        padding: 14px;
+        font-size: 1rem;
+    }
+}
+
+/* =============================================
+   STORY SECTION RESPONSIVE
+   ============================================= */
+@media (max-width: 900px) {
+    .story-content {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .story-text {
+        padding-left: 0;
+        text-align: center;
+    }
+
+    .story-text h2 {
+        font-size: 2rem;
+    }
+
+    .story-text p {
+        margin: 0 auto 40px;
+    }
+
+    .story-section {
+        padding: 60px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .story-text h2 {
+        font-size: 1.6rem;
+    }
+
+    .story-text p {
+        font-size: 1rem;
+    }
+}
+
+/* =============================================
+   CART DRAWER RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+    .cart-drawer {
+        width: 100%;
+        right: -100%;
+    }
+}
+
+/* =============================================
+   AUTH MODAL RESPONSIVE
+   ============================================= */
+@media (max-width: 480px) {
+    .auth-modal {
+        padding: 24px 18px;
+        width: 95%;
+    }
+
+    .auth-modal-header h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* =============================================
+   CHECKOUT PAGE RESPONSIVE
+   ============================================= */
+@media (max-width: 900px) {
+    .container > div[style*="grid-template-columns"] {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+}
+
+/* Target the checkout grid specifically */
+@media (max-width: 900px) {
+    .checkout-form-container,
+    .checkout-summary {
+        width: 100%;
+    }
+}
+
+/* =============================================
+   GIVEAWAY PAGE RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+    /* Giveaway form inline inputs need to stack */
+    [style*="display: flex"][style*="gap"] > .input-group {
+        flex: 1 1 100%;
+    }
+}
+
+/* =============================================
+   FOOTER RESPONSIVE
+   ============================================= */
+@media (max-width: 480px) {
+    .footer {
+        padding: 40px 0 20px;
+    }
+
+    .footer-content {
+        padding-left: 16px;
+        padding-right: 16px;
+        gap: 20px;
+    }
+
+    .footer-section h4 {
+        font-size: 0.85rem;
+    }
+
+    .footer-bottom {
+        padding: 0 16px;
+        font-size: 0.78rem;
+    }
+}
+
+/* =============================================
+   SECTION TITLE / HEADER UTILITY
+   ============================================= */
+@media (max-width: 768px) {
+    .section-header h2,
+    .section-title {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-header h2,
+    .section-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* =============================================
+   POLICY PAGE RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+    .policy-page {
+        padding: 100px 20px 60px;
+    }
+}
+
+/* =============================================
+   CONTACT PAGE RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+    form > div[style*="display: grid"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* =============================================
+   ABOUT PAGE RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+    .values-grid {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+    }
+
+    .section-title {
+        font-size: 1.6rem;
+    }
+
+    .mission-vision-section {
+        gap: 2rem;
+    }
+}
+
+/* =============================================
+   LOGOUT MODAL RESPONSIVE
+   ============================================= */
+@media (max-width: 480px) {
+    .logout-modal {
+        padding: 28px 20px;
+    }
+
+    .logout-modal-actions {
+        flex-direction: column;
+    }
+
+    .logout-cancel-btn,
+    .logout-confirm-btn {
+        width: 100%;
+    }
+}
+
+/* =============================================
+   RESET PASSWORD PAGE RESPONSIVE
+   ============================================= */
+@media (max-width: 480px) {
+    .container[style*="max-width: 500px"] {
+        padding: 100px 16px 40px;
+    }
+}
+
+/* =============================================
+   TOUCH IMPROVEMENTS: tap targets
+   ============================================= */
+@media (hover: none) and (pointer: coarse) {
+    button, a, input, select {
+        min-height: 44px;
+    }
+
+    .sidebar-links li {
+        margin-bottom: 18px;
+    }
+
+    .thumbnail-img {
+        min-width: 55px;
+    }
+}

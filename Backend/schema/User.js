@@ -6,6 +6,13 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     user_type: { type: String, enum: ['admin', 'customer'], default: 'customer' },
     status: { type: Number, default: 1 }, // 1 = Active, 0 = Suspended
+    phone: { type: String },
+    address: { type: String },
+    city: { type: String },
+    state: { type: String },
+    pincode: { type: String },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
     createdAt: { type: Date, default: Date.now },
     last_login: { type: Date }
 });

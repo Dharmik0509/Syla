@@ -5,12 +5,14 @@ import Footer from '../components/Footer';
 import API_HOST from '../config';
 import '../styles/ProductDetails.css';
 import ShimmerImage from '../components/ShimmerImage';
+import { useShop } from '../context/ShopContext';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState(0);
+    const { addToCart } = useShop();
 
     useEffect(() => {
         fetchProduct();
@@ -39,19 +41,11 @@ const ProductDetails = () => {
         ? Math.round(product.price - (product.price * (product.discountPercentage / 100)))
         : product?.price;
 
-    const handleWhatsAppOrder = () => {
+    const handleAddToCart = () => {
         if (!product) return;
-        const currentSrc = product.images?.[selectedImage] || product.images?.[0] || '';
-        const price = hasDiscount ? discountedPrice : product.price;
-
-        const message = `Hello , I want to order this piece 
-Product name : ${product.title}
-Product size : Free Size
-Product price : ₹${price}
-Product img : ${currentSrc}`;
-
-        const url = `https://wa.me/919274720033?text=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
+        addToCart(product, 1, 'Free Size', discountedPrice);
+        // Optional: show a small toast or open the cart drawer here
+        alert("Added to Cart!");
     };
 
     const nextImage = () => {
@@ -154,8 +148,8 @@ Product img : ${currentSrc}`;
                         Status: {product.stockQuantity > 0 ? <span className="in-stock">In Stock</span> : <span className="out-of-stock">Out of Stock</span>}
                     </div>
 
-                    <button onClick={handleWhatsAppOrder} className="whatsapp-btn">
-                        <span>Order via WhatsApp</span>
+                    <button onClick={handleAddToCart} className="add-to-cart-btn">
+                        <span>🛍️ Add to Cart</span>
                     </button>
 
                     <div style={{ marginTop: '2rem', display: 'flex', gap: '20px', fontSize: '0.9rem', color: '#666' }}>

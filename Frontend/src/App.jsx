@@ -15,6 +15,9 @@ const CollectionPage = React.lazy(() => import('./pages/CollectionPage'));
 const PolicyPage = React.lazy(() => import('./pages/PolicyPage'));
 const ProductDetails = React.lazy(() => import('./pages/ProductDetails'));
 const GiveawayPage = React.lazy(() => import('./pages/GiveawayPage'));
+const Checkout = React.lazy(() => import('./pages/Checkout'));
+const ResetPassword = React.lazy(() => import('./pages/ResetPassword'));
+const ModelApply = React.lazy(() => import('./pages/ModelApply'));
 
 // Admin Pages
 import AdminLogin from './pages/admin/AdminLogin';
@@ -27,6 +30,7 @@ const DiscountManager = React.lazy(() => import('./pages/admin/DiscountManager')
 const AnnouncementManager = React.lazy(() => import('./pages/admin/AnnouncementManager'));
 const GiveawayManager = React.lazy(() => import('./pages/admin/GiveawayManager'));
 const SubscriberManager = React.lazy(() => import('./pages/admin/SubscriberManager'));
+const ModelManager = React.lazy(() => import('./pages/admin/ModelManager'));
 
 // Admin Context
 import { AdminUIProvider } from './context/AdminUIContext';
@@ -35,7 +39,12 @@ import { ShopProvider } from './context/ShopContext';
 const Layout = ({ children }) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isStandaloneRoute = ['/model-apply'].includes(location.pathname);
   const [isAnnouncementVisible, setIsAnnouncementVisible] = React.useState(false);
+
+  if (isStandaloneRoute) {
+    return <main>{children}</main>;
+  }
 
   return (
     <>
@@ -65,6 +74,9 @@ function App() {
                 <Route path="/product/:id" element={<ProductDetails />} />
                 <Route path="/pages/:pageId" element={<PolicyPage />} />
                 <Route path="/giveaway" element={<GiveawayPage />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
+                <Route path="/model-apply" element={<ModelApply />} />
 
                 {/* Admin Routes - Wrapped in Provider */}
                 <Route path="/admin/*" element={
@@ -80,6 +92,7 @@ function App() {
                       <Route path="announcements" element={<AnnouncementManager />} />
                       <Route path="giveaway" element={<GiveawayManager />} />
                       <Route path="subscribers" element={<SubscriberManager />} />
+                      <Route path="models" element={<ModelManager />} />
                     </Routes>
                   </AdminUIProvider>
                 } />

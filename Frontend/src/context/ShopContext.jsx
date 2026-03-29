@@ -11,6 +11,16 @@ export const ShopProvider = ({ children }) => {
     const [discounts, setDiscounts] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Cart State
+    const [cart, setCart] = useState(() => {
+        const savedCart = localStorage.getItem('syla_cart');
+        return savedCart ? JSON.parse(savedCart) : [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('syla_cart', JSON.stringify(cart));
+    }, [cart]);
+
     const fetchGlobalData = async () => {
         try {
             // Parallel Fetch for efficiency
@@ -40,13 +50,56 @@ export const ShopProvider = ({ children }) => {
         fetchGlobalData();
     }, []);
 
+    // --- Cart Functions ---
+    const addToCart = (product, quantity = 1, size = 'Free Size', customizedPrice = null) => {
+        setCart(prevCart => {
+            const existingItemIndex = prevCart.findIndex(item => item._id === product._id && item.size === size);
+            
+            const itemPrice = customizedPrice !== null ? customizedPrice : product.price;
+
+            if (existingItemIndex >= 0) {
+                const newCart = [...prevCart];
+                newCart[existingItemIndex].quantity += quantity;
+                return newCart;
+            } else {
+                return [...prevCart, { ...product, quantity, size, cartPrice: itemPrice }];
+            }
+        });
+    };
+
+    const removeFromCart = (productId, size = 'Free Size') => {
+        setCart(prevCart => prevCart.filter(item => !(item._id === productId && item.size === size)));
+    };
+
+    const updateQuantity = (productId, size, newQuantity) => {
+        if (newQuantity <= 0) {
+            removeFromCart(productId, size);
+            return;
+        }
+        setCart(prevCart => prevCart.map(item => 
+            (item._id === productId && item.size === size) 
+                ? { ...item, quantity: newQuantity } 
+                : item
+        ));
+    };
+
+    const clearCart = () => {
+        setCart([]);
+    };
+
     // Memoize value to prevent unnecessary re-renders
     const value = {
         categories,
         announcements,
         discounts,
         loading,
-        refreshGlobalData: fetchGlobalData
+        refreshGlobalData: fetchGlobalData,
+        // Cart exports
+        cart,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart
     };
 
     return (

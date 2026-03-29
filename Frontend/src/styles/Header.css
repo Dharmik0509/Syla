@@ -20,18 +20,41 @@
 }
 
 .header.scrolled {
-    background: rgba(255, 255, 255, 0.1);
-    /* Shady White Glass */
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    color: #fff;
-    /* Keeping text white for now, can adjust if needed */
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    color: #1A4D33;
 }
 
+/* Hamburger — dark when scrolled */
 .header.scrolled .hamburger-btn {
     color: #1A4D33;
+}
+
+/* Cart icon — dark when scrolled */
+.header.scrolled .cart-btn {
+    color: #1A4D33;
+}
+
+/* Sign In pill — dark border + text when scrolled */
+.header.scrolled .header-signin-btn {
+    background: rgba(26, 77, 51, 0.08);
+    border-color: rgba(26, 77, 51, 0.4);
+    color: #1A4D33;
+}
+
+.header.scrolled .header-signin-btn:hover {
+    background: rgba(26, 77, 51, 0.15);
+    border-color: #1A4D33;
+}
+
+/* Logged-in gold state — keep gold but darken slightly when scrolled */
+.header.scrolled .header-signin-btn.header-user-btn {
+    background: rgba(197, 160, 89, 0.12);
+    border-color: rgba(197, 160, 89, 0.5);
+    color: #8a6520;
 }
 
 .main-header {
@@ -90,6 +113,40 @@
     margin-right: 20px;
     display: flex;
     align-items: center;
+}
+
+/* Sign In Button */
+.header-signin-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50px;
+    padding: 7px 16px;
+    font-size: 0.85rem;
+    font-family: var(--font-family-body);
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background 0.25s, border-color 0.25s;
+    white-space: nowrap;
+}
+
+.header-signin-btn:hover {
+    background: rgba(255, 255, 255, 0.28);
+    border-color: #fff;
+}
+
+/* When logged in — subtle gold tint */
+.header-signin-btn.header-user-btn {
+    background: rgba(197, 160, 89, 0.2);
+    border-color: rgba(197, 160, 89, 0.6);
+    color: #f5d99a;
+}
+
+.header-signin-btn.header-user-btn:hover {
+    background: rgba(197, 160, 89, 0.35);
 }
 
 /* --- SIDEBAR OVERLAY STYLES (Rolls-Royce Style) --- */
@@ -482,3 +539,96 @@
         text-shadow: 0 0 0px rgba(197, 160, 89, 0);
     }
 }
+
+/* --- LOGOUT CONFIRMATION MODAL --- */
+.logout-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 4000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeInOverlay 0.2s ease;
+}
+
+@keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.logout-modal {
+    background: #fff;
+    border-radius: 12px;
+    padding: 36px 32px;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    animation: slideUpModal 0.25s ease;
+}
+
+@keyframes slideUpModal {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+}
+
+.logout-modal-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+}
+
+.logout-modal h3 {
+    font-family: var(--font-family-headings, serif);
+    font-size: 1.5rem;
+    color: #1A4D33;
+    margin: 0 0 10px;
+}
+
+.logout-modal p {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0 0 24px;
+}
+
+.logout-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.logout-cancel-btn {
+    flex: 1;
+    padding: 12px;
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    color: #555;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.logout-cancel-btn:hover {
+    border-color: #1A4D33;
+    color: #1A4D33;
+}
+
+.logout-confirm-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #1A4D33;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.logout-confirm-btn:hover {
+    background: #0F2B1D;
+}

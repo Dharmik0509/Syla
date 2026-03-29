@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
 import API_HOST from '../config';
 import { useShop } from '../context/ShopContext';
+import CartDrawer from './CartDrawer';
+import AuthModal from './AuthModal';
 
 // Import Sidebar Images
 import imgSarees from '../assets/images/IMG_6925.JPG';
@@ -31,13 +33,24 @@ const isVideo = (url) => {
 const Header = ({ isAnnouncementVisible }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const [activeImage, setActiveImage] = useState(null);
   const navigate = useNavigate();
 
-  const { categories: rawCategories } = useShop();
+  const { categories: rawCategories, cart } = useShop();
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem('customerToken');
+    const profile = localStorage.getItem('customerProfile');
+    if (token && profile) {
+        setUser(JSON.parse(profile));
+    }
+    
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
@@ -98,8 +111,62 @@ const Header = ({ isAnnouncementVisible }) => {
     toggleSidebar();
   };
 
+  const toggleCart = () => {
+    setIsCartOpen(!isCartOpen);
+  };
+
+  const handleAuthSuccess = (userData) => {
+    setUser(userData);
+    setIsAuthOpen(false);
+  };
+
+  const handleLogout = () => {
+    setIsLogoutOpen(true);
+  };
+
+  const confirmLogout = () => {
+    localStorage.removeItem('customerToken');
+    localStorage.removeItem('customerProfile');
+    setUser(null);
+    setIsLogoutOpen(false);
+  };
+
+  const handleCheckout = () => {
+    setIsCartOpen(false);
+    if (!user) {
+        setIsAuthOpen(true);
+    } else {
+        // Proceed to Checkout
+        navigate('/checkout'); // We will build this view or open a modal next
+    }
+  };
+
   return (
     <>
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} onSuccess={handleAuthSuccess} />
+
+      {/* Custom Logout Confirm Modal */}
+      {isLogoutOpen && (
+        <div className="logout-modal-overlay" onClick={() => setIsLogoutOpen(false)}>
+          <div className="logout-modal" onClick={e => e.stopPropagation()}>
+            <div className="logout-modal-icon">👋</div>
+            <h3>Log Out?</h3>
+            <p>Are you sure you want to sign out of your Syla account?</p>
+            <div className="logout-modal-actions">
+              <button className="logout-cancel-btn" onClick={() => setIsLogoutOpen(false)}>Stay Logged In</button>
+              <button className="logout-confirm-btn" onClick={confirmLogout}>Yes, Log Out</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <CartDrawer 
+        isOpen={isCartOpen} 
+        onClose={() => setIsCartOpen(false)} 
+        onCheckout={handleCheckout}
+        user={user}
+        onAuthRequired={() => setIsAuthOpen(true)}
+      />
       <header className={`header ${isScrolled ? 'scrolled' : ''} ${isAnnouncementVisible ? 'with-announcement' : ''}`}>
 
 
@@ -122,7 +189,38 @@ const Header = ({ isAnnouncementVisible }) => {
           </div>
 
           <div className="header-right">
-            {/* Icons removed as per request */}
+            {/* Sign In / User Button */}
+            {user ? (
+                <button className="header-signin-btn header-user-btn" onClick={handleLogout} title={`Logged in as ${user.personName} — click to logout`}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>Hi, {user.personName?.split(' ')[0]}</span>
+                </button>
+            ) : (
+                <button className="header-signin-btn" onClick={() => setIsAuthOpen(true)} aria-label="Sign In">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>Sign In</span>
+                </button>
+            )}
+
+            {/* Cart Icon */}
+            <button className="icon-btn cart-btn" onClick={toggleCart} aria-label="Cart" style={{ position: 'relative' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              {cart && cart.length > 0 && (
+                <span className="cart-badge" style={{ position: 'absolute', top: '-8px', right: '-8px', background: '#d9534f', color: '#fff', fontSize: '10px', fontWeight: 'bold', padding: '2px 6px', borderRadius: '50%' }}>
+                  {cart.length}
+                </span>
+              )}
+            </button>
           </div>
         </div>
 

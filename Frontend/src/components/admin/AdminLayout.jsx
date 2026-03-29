@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FiGrid, FiBox, FiList, FiImage, FiLogOut, FiMenu, FiTag, FiBell, FiGift, FiUsers } from 'react-icons/fi';
+import { FiGrid, FiBox, FiList, FiImage, FiLogOut, FiMenu, FiTag, FiBell, FiGift, FiUsers, FiStar } from 'react-icons/fi';
 import '../../styles/AdminLayout.css';
 
 const AdminLayout = ({ children }) => {
@@ -23,6 +23,7 @@ const AdminLayout = ({ children }) => {
         { label: 'Hero Image', path: '/admin/hero', icon: <FiImage /> },
         { label: 'Unlock Giveaway', path: '/admin/giveaway', icon: <FiGift /> },
         { label: 'Subscribers', path: '/admin/subscribers', icon: <FiUsers /> },
+        { label: 'Our Models', path: '/admin/models', icon: <FiStar /> },
     ];
 
     return (

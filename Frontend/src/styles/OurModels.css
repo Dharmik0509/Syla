@@ -1,0 +1,134 @@
+/* ── Our Models Section ── */
+.our-models-section {
+    padding: 90px 20px 100px;
+    background: linear-gradient(180deg, #f8f5f2 0%, #fff 100%);
+    text-align: center;
+}
+
+.our-models-eyebrow {
+    font-family: var(--font-family-body, 'Outfit', sans-serif);
+    font-size: 0.82rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #c5a059;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.our-models-title {
+    font-family: var(--font-family-headings, 'Cinzel', serif);
+    font-size: 2.8rem;
+    color: #1A4D33;
+    margin: 0 0 14px;
+}
+
+.our-models-subtitle {
+    color: #888;
+    font-size: 1rem;
+    max-width: 400px;
+    margin: 0 auto 60px;
+    line-height: 1.6;
+}
+
+/* Grid of model cards */
+.our-models-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Individual model card */
+.model-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.25s ease;
+    width: 130px;
+}
+
+.model-card:hover {
+    transform: translateY(-6px);
+}
+
+/* Avatar circle with shimmer ring */
+.model-avatar-wrap {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #c5a059, #1A4D33, #c5a059);
+    padding: 3px;
+    margin-bottom: 14px;
+    transition: box-shadow 0.3s;
+}
+
+.model-card:hover .model-avatar-wrap {
+    box-shadow: 0 0 0 4px rgba(197, 160, 89, 0.35);
+}
+
+.model-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    background: #eee;
+    border: 3px solid #fff;
+}
+
+/* Instagram badge */
+.model-ig-badge {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 26px;
+    height: 26px;
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+}
+
+.model-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #333;
+    margin: 0 0 4px;
+}
+
+.model-handle {
+    font-size: 0.78rem;
+    color: #aaa;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .our-models-section {
+        padding: 60px 16px 70px;
+    }
+
+    .our-models-title {
+        font-size: 2rem;
+    }
+
+    .our-models-grid {
+        gap: 20px;
+    }
+
+    .model-card {
+        width: 100px;
+    }
+
+    .model-avatar-wrap {
+        width: 88px;
+        height: 88px;
+    }
+}
