@@ -37,10 +37,17 @@ export default class DiscountController {
         }
     }
 
-    // Get Active Discounts (Public)
+    // Get Active Discounts (Public) — only returns discounts within their valid date window
     async getActiveDiscounts(req, res) {
         try {
-            const discounts = await Discount.find({ isActive: true }).sort({ createdAt: -1 });
+            const now = new Date();
+            const discounts = await Discount.find({
+                isActive: true,
+                $and: [
+                    { $or: [{ startDate: { $exists: false } }, { startDate: null }, { startDate: { $lte: now } }] },
+                    { $or: [{ endDate:   { $exists: false } }, { endDate:   null }, { endDate:   { $gte: now } }] }
+                ]
+            }).sort({ createdAt: -1 });
             return res.json(discounts);
         } catch (error) {
             return res.status(500).json({ message: "Error fetching active discounts", error: error.message });

@@ -6,6 +6,7 @@ import ProductCardShimmer from '../components/ProductCardShimmer';
 import ShimmerImage from '../components/ShimmerImage';
 
 import { useShop } from '../context/ShopContext';
+import { isDiscountActive, getEffectivePrice } from '../utils/discountUtils';
 
 const CollectionPage = () => {
     const { categoryId } = useParams();
@@ -108,10 +109,8 @@ const CollectionPage = () => {
                 ) : (
                     <div className="product-grid">
                         {products.map((product) => {
-                            const hasDiscount = product.discountPercentage > 0;
-                            const discountedPrice = hasDiscount
-                                ? Math.round(product.price - (product.price * (product.discountPercentage / 100)))
-                                : product.price;
+                        const hasDiscount = isDiscountActive(product);
+                            const discountedPrice = getEffectivePrice(product);
 
                             return (
                                 <Link to={`/product/${product._id}`} key={product._id} className="product-card" style={{ textDecoration: 'none', color: 'inherit' }}>

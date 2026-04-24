@@ -4,6 +4,7 @@ import useScrollReveal from '../hooks/useScrollReveal';
 import '../styles/ProductGrid.css';
 import API_HOST from '../config';
 import ProductCardShimmer from './ProductCardShimmer';
+import { isDiscountActive, getEffectivePrice } from '../utils/discountUtils';
 
 import ShimmerImage from './ShimmerImage';
 
@@ -49,10 +50,8 @@ const ProductGrid = () => {
                     ))
                 ) : (
                     products.map(product => {
-                        const hasDiscount = product.discountPercentage > 0;
-                        const discountedPrice = hasDiscount
-                            ? Math.round(product.price - (product.price * (product.discountPercentage / 100)))
-                            : product.price;
+                        const hasDiscount = isDiscountActive(product);
+                        const discountedPrice = getEffectivePrice(product);
 
                         return (
                             <Link to={`/product/${product._id}`} key={product._id} className="product-card" style={{ textDecoration: 'none', color: 'inherit' }}>

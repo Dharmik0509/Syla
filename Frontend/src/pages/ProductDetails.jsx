@@ -6,6 +6,7 @@ import API_HOST from '../config';
 import '../styles/ProductDetails.css';
 import ShimmerImage from '../components/ShimmerImage';
 import { useShop } from '../context/ShopContext';
+import { isDiscountActive, getEffectivePrice } from '../utils/discountUtils';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -36,10 +37,8 @@ const ProductDetails = () => {
         }
     };
 
-    const hasDiscount = product?.discountPercentage > 0;
-    const discountedPrice = (product && hasDiscount)
-        ? Math.round(product.price - (product.price * (product.discountPercentage / 100)))
-        : product?.price;
+    const hasDiscount = isDiscountActive(product);
+    const discountedPrice = getEffectivePrice(product);
 
     const handleAddToCart = () => {
         if (!product) return;
